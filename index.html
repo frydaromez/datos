@@ -50,11 +50,7 @@
       padding: 20px 0 22px;
     }
     .logo { display: flex; align-items: center; gap: 10px; }
-    .logo-mark {
-      width: 36px; height: 36px; background: var(--green);
-      border-radius: 9px; display: flex; align-items: center; justify-content: center;
-      font-size: 12px; font-weight: 900; color: #000; letter-spacing: -.5px; flex-shrink: 0;
-    }
+    .logo-img { width: 36px; height: 36px; border-radius: 9px; object-fit: cover; flex-shrink: 0; }
     .logo-name { font-size: 13px; font-weight: 800; color: var(--white); letter-spacing: .2px; }
     .badge-live {
       display: inline-flex; align-items: center; gap: 7px;
@@ -188,7 +184,7 @@
       padding-right: 22px;
     }
     .cand-card.selected .c-name { color: var(--green); }
-    .cand-card.tono .c-name { font-size: 13.6px; } /* sutilmente más grande */
+    .cand-card.tono .c-name { font-size: 14.5px; } /* sutilmente más grande */
 
     .c-bar {
       width: 24px; height: 3px; background: var(--border);
@@ -224,7 +220,8 @@
     .party-card.selected .p-name { color: var(--green); }
     .p-radio { width: 21px; height: 21px; border: 2px solid #3a3a3a; border-radius: 50%; flex-shrink: 0; display: flex; align-items: center; justify-content: center; transition: all var(--trans); }
     .p-radio::after { content: ''; width: 7px; height: 7px; background: #000; border-radius: 50%; opacity: 0; transform: scale(0); transition: all .22s cubic-bezier(.34,1.56,.64,1); }
-    .p-emoji { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .p-emoji { width: 40px; height: 40px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; overflow: hidden; }
+    .p-emoji img { width: 100%; height: 100%; object-fit: contain; border-radius: 8px; }
     .p-name  { font-size: 14px; font-weight: 700; transition: color var(--trans); }
     .p-desc  { font-size: 11px; color: var(--gray); margin-top: 1px; font-weight: 400; }
 
@@ -294,7 +291,7 @@
 
 <div class="topbar">
   <div class="logo">
-    <div class="logo-mark">BD</div>
+    <img src="https://raw.githubusercontent.com/frydaromez/datos/main/datos.jpg" class="logo-img" alt="El Bajío en Datos" />
     <div class="logo-name">El Bajío en Datos</div>
   </div>
   <div class="badge-live"><span class="badge-dot"></span>Encuesta activa</div>
@@ -319,12 +316,18 @@ const CANDIDATES = [
   "Juan Pablo Delgado","Dessire Ángel Rocha","Mauricio Battaglia Velázquez",
   "Arturo Sánchez Castellanos","Kikis Magaña"
 ];
+const PARTY_LOGOS = {
+  "PAN":          "https://raw.githubusercontent.com/frydaromez/datos/main/pan.webp",
+  "MORENA":       "https://raw.githubusercontent.com/frydaromez/datos/main/MORENA.png",
+  "MC":           "https://raw.githubusercontent.com/frydaromez/datos/main/mc.png",
+  "Partido Verde":"https://raw.githubusercontent.com/frydaromez/datos/main/PV.webp"
+};
 const PARTIES = [
-  {abbr:"PAN",          name:"Partido Acción Nacional",  color:"#003DA5", emoji:"🔵"},
-  {abbr:"MORENA",       name:"Morena",                   color:"#8B1A1A", emoji:"🔴"},
-  {abbr:"MC",           name:"Movimiento Ciudadano",     color:"#FF6200", emoji:"🟠"},
-  {abbr:"Partido Verde",name:"Partido Verde Ecologista", color:"#2E7D32", emoji:"🟢"},
-  {abbr:"Otro",         name:"Otro",                       color:"#555555", emoji:"⚪"}
+  {abbr:"PAN",          name:"Partido Acción Nacional",  color:"#003DA5"},
+  {abbr:"MORENA",       name:"Morena",                   color:"#8B1A1A"},
+  {abbr:"MC",           name:"Movimiento Ciudadano",     color:"#FF6200"},
+  {abbr:"Partido Verde",name:"Partido Verde Ecologista", color:"#2E7D32"},
+  {abbr:"Otro",         name:"Escribe cuál",             color:"#555555", emoji:"⚪"}
 ];
 const MAX = 3;
 
@@ -336,10 +339,9 @@ const state = {
 };
 
 function shuffleAll(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a; }
-// Toño en índice 1 = top-center en grilla de 3 cols (zona de mayor atención visual)
 function pinnedShuffle(arr, pin){
   const rest=arr.filter(c=>c!==pin); shuffleAll(rest);
-  rest.splice(1,0,pin); return rest;
+  rest.splice(0,0,pin); return rest;
 }
 function equalizeCards(gridId){
   requestAnimationFrame(()=>{
@@ -428,7 +430,7 @@ function renderQ1(){
   state.step=1; updateProgress(1);
   app.innerHTML=`
     <div class="screen">
-      <div class="q-number">Pregunta 1 de 4</div>
+
       <p class="q-title">De los siguientes personajes públicos en León <strong>¿a quiénes conoce o ha escuchado nombrar?</strong></p>
       <p class="q-sub"><span class="sel-count" id="cnt1">${state.q1.length}</span> de 3</p>
       <div class="cand-grid" id="grid1">
@@ -488,10 +490,12 @@ function renderQ3(){
           <div class="party-card ${state.q3===p.abbr?'selected':''}" data-val="${p.abbr}"
                onclick="selectParty(event,this,'q3','grpQ3','nb3')">
             <div class="p-radio"></div>
-            <div class="p-emoji" style="background:${p.color}18;border:1px solid ${p.color}30">${p.emoji}</div>
+            <div class="p-emoji" style="background:${p.color}18;border:1px solid ${p.color}30">
+              ${PARTY_LOGOS[p.abbr]?`<img src="${PARTY_LOGOS[p.abbr]}" alt="${p.abbr}" />`:(p.emoji||'⚪')}
+            </div>
             <div>
               <div class="p-name">${p.abbr}</div>
-              <div class="p-desc">${p.name}</div>
+              ${p.abbr!=='Otro'?`<div class="p-desc">${p.name}</div>`:''}
             </div>
           </div>`).join('')}
       </div>
