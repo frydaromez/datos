@@ -57,21 +57,11 @@
     }
     .sticky-header .topbar { padding: 0 0 10px; }
     .sticky-header .progress-wrap { margin-bottom: 0; }
-    .sticky-header .q-sticky { padding: 10px 0 10px; border-top: 1px solid #1a1a1a; }
 
     /* ── STICKY Q-HEADER ── */
-    .q-sticky {
-      position: sticky;
-      top: var(--sh-h, 88px);
-      z-index: 80;
-      background: rgba(10,10,10,.97);
-      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-      padding: 10px 0 10px;
-      border-bottom: 1px solid #1e1e1e;
-      margin-bottom: 14px;
-    }
+    .q-sticky { padding: 0 0 4px; }
     .q-sticky .q-title  { margin-bottom: 4px; }
-    .q-sticky .q-sub    { margin-bottom: 0; }
+    .q-sticky .q-sub    { margin-bottom: 16px; }
 
     /* ── TOPBAR ── */
     .topbar {
@@ -538,8 +528,7 @@ function renderQ1(){
   setStickyOffset();
   app.innerHTML=`
     <div class="screen">
-
-
+      <div class="q-sticky"><p class="q-title">De los siguientes personajes públicos en León <strong>¿a quiénes conoce o ha escuchado nombrar?</strong></p><p class="q-sub"><span class="sel-count" id="cnt1">${state.q1.length}</span> de 3</p></div>
       <div class="cand-grid" id="grid1">
         ${state.o1.map(c=>`
           <div class="cand-card ${state.q1.includes(c)?'selected':''} ${c==='Toño Guzmán'?'tono':''}" data-name="${c}"
