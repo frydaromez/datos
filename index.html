@@ -61,8 +61,14 @@
 
     /* ── STICKY Q-HEADER ── */
     .q-sticky {
-      padding: 10px 0 6px;
-      border-top: 1px solid #1a1a1a;
+      position: sticky;
+      top: var(--sh-h, 88px);
+      z-index: 80;
+      background: rgba(10,10,10,.97);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      padding: 10px 0 10px;
+      border-bottom: 1px solid #1e1e1e;
+      margin-bottom: 14px;
     }
     .q-sticky .q-title  { margin-bottom: 4px; }
     .q-sticky .q-sub    { margin-bottom: 0; }
@@ -376,11 +382,7 @@
   </div>
   <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
 </div>
-    <div id="qHeader" style="display:none;">
-    <div class="q-title" id="qTitle"></div>
-    <div class="q-sub" id="qSub"></div>
   </div>
-</div>
 
 <div id="app"></div>
 <div class="toast" id="toast"></div>
@@ -472,18 +474,15 @@ function showAlertToast(msg){
 const app=document.getElementById('app');
 const SCREENS=[renderWelcome,renderQ1,renderQ2,renderQ3,renderQ4,renderThanks];
 
-function updateQHeader(titleHTML, subHTML){
-  const h=document.getElementById('qHeader');
-  const t=document.getElementById('qTitle');
-  const s=document.getElementById('qSub');
-  if(!h) return;
-  if(titleHTML){ t.innerHTML=titleHTML; s.innerHTML=subHTML||''; h.style.display='block'; }
-  else { h.style.display='none'; }
+function setStickyOffset(){
+  const sh=document.querySelector('.sticky-header');
+  if(sh) document.documentElement.style.setProperty('--sh-h', sh.offsetHeight+'px');
 }
+window.addEventListener('resize', setStickyOffset);
 function goTo(n){
   const cur=app.querySelector('.screen');
-  if(cur){cur.classList.add('out');setTimeout(()=>{app.innerHTML='';SCREENS[n]();window.scrollTo({top:0,behavior:'smooth'});},180);}
-  else SCREENS[n]();
+  if(cur){cur.classList.add('out');setTimeout(()=>{app.innerHTML='';SCREENS[n]();window.scrollTo({top:0,behavior:'smooth'});requestAnimationFrame(setStickyOffset);},180);}
+  else { SCREENS[n](); requestAnimationFrame(setStickyOffset); }
 }
 
 function updateProgress(step){
@@ -536,7 +535,7 @@ function renderWelcome(){
 /* ── Q1 ── */
 function renderQ1(){
   state.step=1; updateProgress(1);
-  updateQHeader('De los siguientes personajes públicos en León <strong>¿a quiénes conoce o ha escuchado nombrar?</strong>',`<span class="sel-count" id="cnt1">${state.q1.length}</span> de 3`);
+  setStickyOffset();
   app.innerHTML=`
     <div class="screen">
 
@@ -562,10 +561,11 @@ function renderQ1(){
 /* ── Q2 ── */
 function renderQ2(){
   state.step=2; updateProgress(2);
-  updateQHeader('Independientemente de su preferencia política ¿por cuál de estas personas <strong>USTED NUNCA VOTARÍA</strong> para la Presidencia Municipal de León?',`<span class="sel-count" id="cnt2">${state.q2.length}</span> de 3`);
+  setStickyOffset();
   const atMax=state.q2.length>=MAX;
   app.innerHTML=`
     <div class="screen">
+      <div class="q-sticky"><p class="q-title">Independientemente de su preferencia política ¿por cuál de estas personas <strong>USTED NUNCA VOTARÍA</strong> para la Presidencia Municipal de León?</p><p class="q-sub"><span class="sel-count" id="cnt2">${state.q2.length}</span> de 3</p></div>
       <div class="cand-grid" id="grid2">
         ${state.o2.map(c=>`
           <div class="cand-card ${state.q2.includes(c)?'selected':''} ${c==='Toño Guzmán'?'tono':''} ${atMax&&!state.q2.includes(c)?'maxed':''}"
@@ -587,10 +587,11 @@ function renderQ2(){
 /* ── Q3 ── */
 function renderQ3(){
   state.step=3; updateProgress(3);
-  updateQHeader('¿En cuál de los siguientes partidos <strong>confía más</strong> para gobernar León?','Seleccione una opción');
+  setStickyOffset();
   const isOtro=state.q3==='Otro';
   app.innerHTML=`
     <div class="screen">
+      <div class="q-sticky"><p class="q-title">¿En cuál de los siguientes partidos <strong>confía más</strong> para gobernar León?</p><p class="q-sub">Seleccione una opción</p></div>
       <div class="party-list" id="grpQ3">
         ${PARTIES.map(p=>`
           <div class="party-card ${state.q3===p.abbr?'selected':''}" data-val="${p.abbr}"
@@ -621,10 +622,11 @@ function renderQ3(){
 /* ── Q4 ── */
 function renderQ4(){
   state.step=4; updateProgress(4);
-  updateQHeader('Si <strong>hoy fueran las elecciones</strong> para Presidente Municipal de León <strong>¿por quién votaría?</strong>','Seleccione una opción');
+  setStickyOffset();
   const extras=["Ninguno / Anularía mi voto","Aún no lo he decidido"];
   app.innerHTML=`
     <div class="screen">
+      <div class="q-sticky"><p class="q-title">Si <strong>hoy fueran las elecciones</strong> para Presidente Municipal de León <strong>¿por quién votaría?</strong></p><p class="q-sub">Seleccione una opción</p></div>
       <div class="cand-grid" id="voteGrid">
         ${state.o4.map(c=>`
           <div class="cand-card ${state.q4===c?'selected':''} ${c==='Toño Guzmán'?'tono':''}" data-name="${c}" onclick="selectVote(event,this)">
@@ -651,7 +653,6 @@ function renderQ4(){
 
 /* ── THANKS ── */
 function renderThanks(){
-  updateQHeader(null);
   updateProgress(4);
   setTimeout(()=>{
     const f=document.getElementById('progressFill');
