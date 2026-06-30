@@ -145,6 +145,20 @@
     }
     .toast.show { opacity: 1; transform: translateX(-50%) translateY(0); }
 
+    .toast-alert {
+      position: fixed; top: calc(env(safe-area-inset-top,0px) + 16px);
+      left: 50%; transform: translateX(-50%) translateY(-20px);
+      background: #1a0505; border: 2px solid #ff3b3b;
+      color: #ff6b6b; font-size: 14px; font-weight: 800;
+      padding: 14px 24px; border-radius: 16px;
+      box-shadow: 0 0 0 1px #ff3b3b44, 0 12px 40px rgba(255,40,40,.35);
+      max-width: 88vw; text-align: center; line-height: 1.4;
+      z-index: 9999; opacity: 0;
+      transition: opacity .22s ease, transform .22s cubic-bezier(.34,1.56,.64,1);
+      pointer-events: none; white-space: normal;
+    }
+    .toast-alert.show { opacity: 1; transform: translateX(-50%) translateY(0); }
+
     /* ── CANDIDATE GRID ── */
     .cand-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(110px,1fr)); gap: 8px; margin-bottom: 24px; align-items: stretch; }
 
@@ -332,6 +346,7 @@
 
 <div id="app"></div>
 <div class="toast" id="toast"></div>
+<div class="toast-alert" id="toastAlert"></div>
 
 <script>
 const CANDIDATE_PHOTOS = {
@@ -408,6 +423,12 @@ function showToast(msg){
   const t=document.getElementById('toast');
   t.textContent=msg; t.classList.add('show');
   clearTimeout(_tt); _tt=setTimeout(()=>t.classList.remove('show'),2400);
+}
+let _ta;
+function showAlertToast(msg){
+  const t=document.getElementById('toastAlert');
+  t.innerHTML=msg; t.classList.add('show');
+  clearTimeout(_ta); _ta=setTimeout(()=>t.classList.remove('show'),3200);
 }
 
 const app=document.getElementById('app');
@@ -621,7 +642,7 @@ function toggleCand(e,el,key,cntId,btnId,gridId,maxSel,remind){
     state[key].push(name); el.classList.add('selected'); ripple(e,el);
     el.classList.remove('pop'); requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('pop')));
     pulseBar();
-    if(remind) showToast('Recuerda: estás indicando que NUNCA votarías por esta persona');
+    if(remind) showAlertToast('⚠️ Recuerda: estás indicando que <strong>NUNCA</strong> votarías por esta persona');
   } else {
     state[key].splice(idx,1); el.classList.remove('selected');
   }
