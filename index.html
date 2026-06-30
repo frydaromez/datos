@@ -346,6 +346,7 @@
 </head>
 <body>
 
+<div id="stickyTop" style="position:sticky;top:0;z-index:100;background:#0a0a0a;">
 <div class="topbar">
 
   <div class="logo">
@@ -360,6 +361,8 @@
     <span class="step-label" id="stepLabel">Pregunta 1 de 4</span>
     <span id="stepPct">25%</span>
   </div>
+<div id="qHeaderStatic" style="display:none;padding:10px 0 0;"></div>
+</div>
   <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
 </div>
 
@@ -451,6 +454,12 @@ function showAlertToast(msg){
 }
 
 const app=document.getElementById('app');
+function updateQHeader(html){
+  const el=document.getElementById('qHeaderStatic');
+  if(!el) return;
+  if(html){ el.innerHTML=html; el.style.display='block'; }
+  else { el.style.display='none'; el.innerHTML=''; }
+}
 const SCREENS=[renderWelcome,renderQ1,renderQ2,renderQ3,renderQ4,renderThanks];
 
 
@@ -510,9 +519,9 @@ function renderWelcome(){
 /* ── Q1 ── */
 function renderQ1(){
   state.step=1; updateProgress(1);
+  updateQHeader(`<p class="q-title">De los siguientes personajes públicos en León <strong>¿a quiénes conoce o ha escuchado nombrar?</strong></p><p class="q-sub"><span class="sel-count" id="cnt1">${state.q1.length}</span> de 3</p>`);
   app.innerHTML=`
     <div class="screen">
-      <div class="q-sticky"><p class="q-title">De los siguientes personajes públicos en León <strong>¿a quiénes conoce o ha escuchado nombrar?</strong></p><p class="q-sub"><span class="sel-count" id="cnt1">${state.q1.length}</span> de 3</p></div>
       <div class="cand-grid" id="grid1">
         ${state.o1.map(c=>`
           <div class="cand-card ${state.q1.includes(c)?'selected':''} ${c==='Toño Guzmán'?'tono':''}" data-name="${c}"
@@ -534,10 +543,10 @@ function renderQ1(){
 /* ── Q2 ── */
 function renderQ2(){
   state.step=2; updateProgress(2);
+  updateQHeader(`<p class="q-title">Independientemente de su preferencia política ¿por cuál de estas personas <strong>USTED NUNCA VOTARÍA</strong> para la Presidencia Municipal de León?</p><p class="q-sub"><span class="sel-count" id="cnt2">${state.q2.length}</span> de 3</p>`);
   const atMax=state.q2.length>=MAX;
   app.innerHTML=`
     <div class="screen">
-      <div class="q-sticky"><p class="q-title">Independientemente de su preferencia política ¿por cuál de estas personas <strong>USTED NUNCA VOTARÍA</strong> para la Presidencia Municipal de León?</p><p class="q-sub"><span class="sel-count" id="cnt2">${state.q2.length}</span> de 3</p></div>
       <div class="cand-grid" id="grid2">
         ${state.o2.map(c=>`
           <div class="cand-card ${state.q2.includes(c)?'selected':''} ${c==='Toño Guzmán'?'tono':''} ${atMax&&!state.q2.includes(c)?'maxed':''}"
@@ -559,10 +568,10 @@ function renderQ2(){
 /* ── Q3 ── */
 function renderQ3(){
   state.step=3; updateProgress(3);
+  updateQHeader('<p class="q-title">¿En cuál de los siguientes partidos <strong>confía más</strong> para gobernar León?</p><p class="q-sub">Seleccione una opción</p>');
   const isOtro=state.q3==='Otro';
   app.innerHTML=`
     <div class="screen">
-      <div class="q-sticky"><p class="q-title">¿En cuál de los siguientes partidos <strong>confía más</strong> para gobernar León?</p><p class="q-sub">Seleccione una opción</p></div>
       <div class="party-list" id="grpQ3">
         ${PARTIES.map(p=>`
           <div class="party-card ${state.q3===p.abbr?'selected':''}" data-val="${p.abbr}"
@@ -593,10 +602,10 @@ function renderQ3(){
 /* ── Q4 ── */
 function renderQ4(){
   state.step=4; updateProgress(4);
+  updateQHeader('<p class="q-title">Si <strong>hoy fueran las elecciones</strong> para Presidente Municipal de León <strong>¿por quién votaría?</strong></p><p class="q-sub">Seleccione una opción</p>');
   const extras=["Ninguno / Anularía mi voto","Aún no lo he decidido"];
   app.innerHTML=`
     <div class="screen">
-      <div class="q-sticky"><p class="q-title">Si <strong>hoy fueran las elecciones</strong> para Presidente Municipal de León <strong>¿por quién votaría?</strong></p><p class="q-sub">Seleccione una opción</p></div>
       <div class="cand-grid" id="voteGrid">
         ${state.o4.map(c=>`
           <div class="cand-card ${state.q4===c?'selected':''} ${c==='Toño Guzmán'?'tono':''}" data-name="${c}" onclick="selectVote(event,this)">
@@ -623,6 +632,7 @@ function renderQ4(){
 
 /* ── THANKS ── */
 function renderThanks(){
+  updateQHeader(null);
   updateProgress(4);
   setTimeout(()=>{
     const f=document.getElementById('progressFill');
