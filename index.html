@@ -6,7 +6,7 @@
   <meta name="apple-mobile-web-app-capable" content="yes" />
   <meta name="apple-mobile-web-app-status-bar-style" content="black-translucent" />
   <meta name="theme-color" content="#0a0a0a" />
-  <title>Encuesta Ciudadana León 2026 | PulsoGTO</title>
+  <title>Encuesta Ciudadana León 2026 | El Bajío en Datos</title>
   <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@300;400;500;600;700;800;900&display=swap" rel="stylesheet" />
   <style>
     *, *::before, *::after {
@@ -20,11 +20,12 @@
       --card:      #1c1c1c;
       --green:     #3dff6e;
       --green-dim: #1a7a33;
-      --green-glow:#3dff6e44;
+      --green-glow:#3dff6e33;
       --white:     #f5f5f5;
-      --gray:      #888;
-      --border:    #2a2a2a;
-      --radius:    16px;
+      --gray:      #777;
+      --gray-lt:   #aaa;
+      --border:    #242424;
+      --radius:    14px;
       --trans:     0.22s cubic-bezier(.4,0,.2,1);
     }
     html { height: -webkit-fill-available; scroll-behavior: smooth; }
@@ -35,246 +36,293 @@
       min-height: 100vh;
       min-height: -webkit-fill-available;
       display: flex; flex-direction: column; align-items: center;
-      padding: calc(env(safe-area-inset-top,0px)) calc(env(safe-area-inset-right,0px) + 16px) calc(env(safe-area-inset-bottom,0px) + 60px) calc(env(safe-area-inset-left,0px) + 16px);
+      padding: calc(env(safe-area-inset-top,0px) + 0px)
+               calc(env(safe-area-inset-right,0px) + 20px)
+               calc(env(safe-area-inset-bottom,0px) + 60px)
+               calc(env(safe-area-inset-left,0px) + 20px);
       overflow-x: hidden;
       -webkit-overflow-scrolling: touch;
       overscroll-behavior-y: none;
     }
 
-    /* ── TOP BAR ── */
+    /* ══════════════════════════════
+       TOP BAR
+    ══════════════════════════════ */
     .topbar {
-      width: 100%; max-width: 640px;
-      display: flex; align-items: center;
-      padding: 22px 0 20px;
+      width: 100%; max-width: 680px;
+      display: flex; align-items: center; justify-content: space-between;
+      padding: 22px 0 24px;
     }
-    .logo { display: flex; align-items: center; gap: 10px; }
-    .logo-circle {
-      width: 36px; height: 36px; background: #000;
-      border: 2px solid var(--green); border-radius: 50%;
-      display: flex; align-items: center; justify-content: center; font-size: 17px;
+    .logo {
+      display: flex; align-items: center; gap: 10px;
+      text-decoration: none;
     }
-    .logo-text { font-weight: 800; font-size: 15px; letter-spacing: .5px; }
-    .logo-text span { color: var(--green); }
+    .logo-mark {
+      width: 38px; height: 38px;
+      background: var(--green);
+      border-radius: 10px;
+      display: flex; align-items: center; justify-content: center;
+      font-size: 13px; font-weight: 900; color: #000;
+      letter-spacing: -.5px; flex-shrink: 0;
+    }
+    .logo-text-wrap { display: flex; flex-direction: column; line-height: 1.1; }
+    .logo-name { font-size: 13px; font-weight: 800; color: var(--white); letter-spacing: .2px; }
+    .logo-sub  { font-size: 10px; font-weight: 500; color: var(--gray); letter-spacing: .3px; }
 
-    /* ── PROGRESS ── */
-    .progress-wrap { width: 100%; max-width: 640px; margin-bottom: 28px; }
-    .progress-meta {
-      display: flex; justify-content: space-between;
-      font-size: 11px; font-weight: 700; color: var(--gray);
-      margin-bottom: 8px; text-transform: uppercase; letter-spacing: .6px;
-    }
-    .step-label { color: var(--green); }
-    .progress-bar-bg { width: 100%; height: 4px; background: var(--border); border-radius: 99px; overflow: hidden; }
-    .progress-bar-fill {
-      height: 100%;
-      background: linear-gradient(90deg, var(--green-dim), var(--green));
-      border-radius: 99px;
-      transition: width .55s cubic-bezier(.4,0,.2,1);
-      box-shadow: 0 0 12px var(--green-glow);
-    }
-
-    /* ── SCREENS ── */
-    .screen { width: 100%; max-width: 640px; animation: slideIn .32s cubic-bezier(.4,0,.2,1); }
-    @keyframes slideIn { from{opacity:0;transform:translateX(32px)} to{opacity:1;transform:translateX(0)} }
-    .screen.out { animation: slideOut .22s cubic-bezier(.4,0,.2,1) forwards; }
-    @keyframes slideOut { to{opacity:0;transform:translateX(-32px)} }
-
-    /* ── WELCOME ── */
-    .welcome-badge {
+    .badge-live {
       display: inline-flex; align-items: center; gap: 7px;
-      background: var(--green-glow); border: 1px solid var(--green-dim);
-      color: var(--green); font-size: 10px; font-weight: 700;
-      text-transform: uppercase; letter-spacing: 1.8px;
-      padding: 7px 14px; border-radius: 99px; margin-bottom: 22px;
+      background: var(--green-glow);
+      border: 1px solid var(--green-dim);
+      color: var(--green);
+      font-size: 10px; font-weight: 700;
+      text-transform: uppercase; letter-spacing: 1.6px;
+      padding: 7px 13px; border-radius: 99px;
+      flex-shrink: 0;
     }
-    .badge-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: blink 1.5s ease infinite; flex-shrink:0; }
-    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.25} }
+    .badge-dot { width: 6px; height: 6px; background: var(--green); border-radius: 50%; animation: blink 1.5s ease infinite; flex-shrink: 0; }
+    @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.2} }
 
-    .welcome-title {
-      font-size: clamp(30px, 7vw, 48px);
-      font-weight: 900; line-height: 1.05;
-      margin-bottom: 24px; letter-spacing: -2px;
-    }
-    .welcome-title .hl { color: var(--green); }
+    /* ══════════════════════════════
+       PROGRESS
+    ══════════════════════════════ */
+    .progress-wrap { width: 100%; max-width: 680px; margin-bottom: 28px; }
+    .progress-meta { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: var(--gray); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .6px; }
+    .step-label { color: var(--green); }
+    .progress-bar-bg { height: 4px; background: var(--border); border-radius: 99px; overflow: hidden; }
+    .progress-bar-fill { height: 100%; background: linear-gradient(90deg, var(--green-dim), var(--green)); border-radius: 99px; transition: width .55s cubic-bezier(.4,0,.2,1); box-shadow: 0 0 10px var(--green-glow); }
 
-    /* ── INFO CARDS ROW ── */
-    .info-cards {
+    /* ══════════════════════════════
+       SCREENS
+    ══════════════════════════════ */
+    .screen { width: 100%; max-width: 680px; animation: slideIn .32s cubic-bezier(.4,0,.2,1); }
+    @keyframes slideIn { from{opacity:0;transform:translateX(28px)} to{opacity:1;transform:translateX(0)} }
+    .screen.out { animation: slideOut .2s cubic-bezier(.4,0,.2,1) forwards; }
+    @keyframes slideOut { to{opacity:0;transform:translateX(-28px)} }
+
+    /* ══════════════════════════════
+       WELCOME — 2-COLUMN HERO
+    ══════════════════════════════ */
+    .hero {
       display: grid;
       grid-template-columns: 1fr 1fr;
-      gap: 10px;
+      gap: 20px;
+      align-items: stretch;
       margin-bottom: 28px;
     }
-    .info-card {
+
+    /* LEFT: big title */
+    .hero-title-col {
+      display: flex; align-items: stretch;
+    }
+    .welcome-title {
+      font-size: clamp(32px, 5.5vw, 52px);
+      font-weight: 900;
+      line-height: 1.06;
+      letter-spacing: -2px;
+      color: var(--white);
+      display: flex; align-items: center;
+    }
+
+    /* RIGHT: info column */
+    .hero-info-col {
+      display: flex; flex-direction: column; gap: 10px;
+    }
+    .info-desc {
       background: var(--surface);
       border: 1px solid var(--border);
       border-radius: var(--radius);
-      padding: 16px;
+      padding: 16px 16px;
+      font-size: 13px; font-weight: 500; color: var(--gray-lt); line-height: 1.6;
+      flex: 1;
     }
-    .info-card.wide {
-      grid-column: 1 / -1;
+    .stat-chips {
+      display: grid; grid-template-columns: 1fr 1fr; gap: 10px;
     }
-    .info-card-label {
-      font-size: 10px; font-weight: 700; color: var(--green);
-      text-transform: uppercase; letter-spacing: 1.5px; margin-bottom: 6px;
+    .stat-chip {
+      background: var(--surface);
+      border: 1px solid var(--border);
+      border-radius: var(--radius);
+      padding: 14px 12px;
+      text-align: center;
     }
-    .info-card-text {
-      font-size: 14px; font-weight: 600; color: var(--white); line-height: 1.45;
-    }
-    .info-card-num {
-      font-size: 28px; font-weight: 900; color: var(--green); line-height: 1;
-    }
-    .info-card-sub {
-      font-size: 11px; font-weight: 600; color: var(--gray); margin-top: 4px; text-transform: uppercase; letter-spacing: .5px;
-    }
+    .stat-chip-num  { font-size: 22px; font-weight: 900; color: var(--green); line-height: 1; }
+    .stat-chip-label{ font-size: 10px; font-weight: 600; color: var(--gray); margin-top: 4px; text-transform: uppercase; letter-spacing: .5px; }
 
-    /* ── PRIVACY SMALL ── */
-    .privacy-small {
-      font-size: 11px; color: #555; line-height: 1.65;
-      font-weight: 400; margin-top: 14px; text-align: center;
-      padding: 0 8px;
+    /* CTA + PRIVACY */
+    .cta-block { margin-bottom: 0; }
+    .privacy-note {
+      margin-top: 16px;
+      font-size: 11.5px; color: #4a4a4a; line-height: 1.8;
+      font-weight: 400;
+      padding: 0 2px;
     }
-    .privacy-small strong { color: #777; font-weight: 600; }
+    .privacy-note strong { color: #666; font-weight: 600; }
 
-    /* ── Q HEADER ── */
+    /* ══════════════════════════════
+       Q HEADER
+    ══════════════════════════════ */
     .q-number { font-size: 10px; font-weight: 700; color: var(--green); text-transform: uppercase; letter-spacing: 2px; margin-bottom: 10px; }
-    .q-title { font-size: clamp(17px,4vw,22px); font-weight: 800; line-height: 1.35; margin-bottom: 8px; }
-    .q-subtitle { font-size: 13px; color: var(--gray); margin-bottom: 24px; font-weight: 500; }
-    .sel-count { color: var(--green); font-weight: 700; }
+    .q-title  { font-size: clamp(17px,3.8vw,22px); font-weight: 800; line-height: 1.35; margin-bottom: 8px; }
+    .q-sub    { font-size: 12.5px; color: var(--gray); margin-bottom: 22px; font-weight: 500; }
+    .sel-count{ color: var(--green); font-weight: 700; }
     .max-note { color: #ff6b6b; font-weight: 700; }
 
-    /* ── CANDIDATE GRID ── */
-    .candidates-grid { display: grid; grid-template-columns: repeat(auto-fill,minmax(160px,1fr)); gap: 9px; margin-bottom: 28px; }
-    .candidate-card {
+    /* ══════════════════════════════
+       CANDIDATE GRID
+    ══════════════════════════════ */
+    .cand-grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fill, minmax(155px,1fr));
+      gap: 8px; margin-bottom: 26px;
+    }
+    .cand-card {
       background: var(--card); border: 1.5px solid var(--border);
-      border-radius: var(--radius); padding: 13px 14px;
-      cursor: pointer;
+      border-radius: var(--radius); padding: 12px 13px;
+      cursor: pointer; position: relative; overflow: hidden;
       transition: border-color var(--trans), background var(--trans), box-shadow var(--trans), transform .12s ease;
-      position: relative; overflow: hidden;
       user-select: none; -webkit-user-select: none;
       -webkit-tap-highlight-color: transparent; touch-action: manipulation;
     }
-    .candidate-card:active { transform: scale(0.96); }
-    .candidate-card.selected { background: #0d2b17; border-color: var(--green); box-shadow: 0 0 0 1px var(--green), 0 4px 18px var(--green-glow); }
-    .candidate-card.selected .c-check { opacity: 1; transform: scale(1) rotate(0deg); }
-    .candidate-card.selected .c-name { color: var(--green); }
-    .candidate-card.selected .c-initial { background: var(--green-dim); color: var(--green); }
-    .candidate-card.maxed:not(.selected) { opacity: .4; pointer-events: none; }
+    .cand-card:active { transform: scale(0.955); }
+    .cand-card.selected {
+      background: #0d2b17; border-color: var(--green);
+      box-shadow: 0 0 0 1px var(--green), 0 4px 16px var(--green-glow);
+    }
+    .cand-card.maxed:not(.selected) { opacity: .3; pointer-events: none; }
+    .cand-card.selected .c-check { opacity: 1; transform: scale(1) rotate(0deg); }
+    .cand-card.selected .c-name  { color: var(--green); }
+    .cand-card.selected .c-init  { background: var(--green-dim); color: var(--green); }
 
     .c-check {
-      position: absolute; top: 9px; right: 9px;
-      width: 20px; height: 20px; background: var(--green);
+      position: absolute; top: 8px; right: 8px;
+      width: 19px; height: 19px; background: var(--green);
       border-radius: 50%; display: flex; align-items: center; justify-content: center;
-      font-size: 11px; font-weight: 900; color: #000;
+      font-size: 10px; font-weight: 900; color: #000;
       opacity: 0; transform: scale(0.3) rotate(-90deg);
-      transition: all .3s cubic-bezier(.34,1.56,.64,1);
+      transition: all .28s cubic-bezier(.34,1.56,.64,1);
     }
-    .c-initial {
-      width: 34px; height: 34px; background: var(--border); border-radius: 10px;
+    .c-init {
+      width: 32px; height: 32px; background: var(--border); border-radius: 9px;
       display: flex; align-items: center; justify-content: center;
-      font-size: 13px; font-weight: 800; color: var(--gray);
-      margin-bottom: 9px; transition: all var(--trans);
+      font-size: 12px; font-weight: 800; color: var(--gray);
+      margin-bottom: 8px; transition: all var(--trans); flex-shrink: 0;
     }
-    .c-name { font-size: 12px; font-weight: 600; line-height: 1.35; transition: color var(--trans); }
+    .c-name { font-size: 11.5px; font-weight: 600; line-height: 1.35; transition: color var(--trans); }
 
-    /* ── PARTY CARDS ── */
-    .party-options { display: grid; gap: 10px; margin-bottom: 24px; }
+    /* ══════════════════════════════
+       PARTY CARDS
+    ══════════════════════════════ */
+    .party-list { display: grid; gap: 9px; margin-bottom: 24px; }
     .party-card {
       background: var(--card); border: 1.5px solid var(--border);
-      border-radius: var(--radius); padding: 16px 18px; cursor: pointer;
+      border-radius: var(--radius); padding: 15px 17px;
+      cursor: pointer;
       transition: border-color var(--trans), background var(--trans), box-shadow var(--trans), transform .12s ease;
-      display: flex; align-items: center; gap: 14px;
+      display: flex; align-items: center; gap: 13px;
       user-select: none; -webkit-user-select: none;
       -webkit-tap-highlight-color: transparent; touch-action: manipulation;
     }
     .party-card:active { transform: scale(0.97); }
-    .party-card.selected { background: #0d2b17; border-color: var(--green); box-shadow: 0 0 0 1px var(--green), 0 4px 18px var(--green-glow); }
+    .party-card.selected { background: #0d2b17; border-color: var(--green); box-shadow: 0 0 0 1px var(--green), 0 4px 16px var(--green-glow); }
     .party-card.selected .p-radio { background: var(--green); border-color: var(--green); }
     .party-card.selected .p-radio::after { opacity: 1; transform: scale(1); }
     .party-card.selected .p-name { color: var(--green); }
 
     .p-radio {
-      width: 22px; height: 22px; border: 2px solid #444; border-radius: 50%;
+      width: 21px; height: 21px; border: 2px solid #3a3a3a; border-radius: 50%;
       flex-shrink: 0; display: flex; align-items: center; justify-content: center;
       transition: all var(--trans);
     }
-    .p-radio::after {
-      content: ''; width: 8px; height: 8px; background: #000; border-radius: 50%;
-      opacity: 0; transform: scale(0); transition: all .22s cubic-bezier(.34,1.56,.64,1);
-    }
-    .p-color { width: 38px; height: 38px; border-radius: 10px; display: flex; align-items: center; justify-content: center; font-size: 17px; flex-shrink: 0; }
-    .p-name { font-size: 14px; font-weight: 700; transition: color var(--trans); }
-    .p-desc { font-size: 11px; color: var(--gray); margin-top: 2px; font-weight: 400; }
+    .p-radio::after { content: ''; width: 7px; height: 7px; background: #000; border-radius: 50%; opacity: 0; transform: scale(0); transition: all .22s cubic-bezier(.34,1.56,.64,1); }
+    .p-emoji { width: 36px; height: 36px; border-radius: 9px; display: flex; align-items: center; justify-content: center; font-size: 16px; flex-shrink: 0; }
+    .p-name  { font-size: 14px; font-weight: 700; transition: color var(--trans); }
+    .p-desc  { font-size: 11px; color: var(--gray); margin-top: 1px; font-weight: 400; }
 
-    /* ── VOTE OPTIONS ── */
-    .vote-options { display: grid; gap: 9px; margin-bottom: 28px; }
+    /* ══════════════════════════════
+       VOTE OPTIONS
+    ══════════════════════════════ */
+    .vote-list { display: grid; gap: 8px; margin-bottom: 26px; }
     .vote-card {
       background: var(--card); border: 1.5px solid var(--border);
-      border-radius: var(--radius); padding: 15px 18px; cursor: pointer;
+      border-radius: var(--radius); padding: 14px 17px; cursor: pointer;
       transition: border-color var(--trans), background var(--trans), box-shadow var(--trans), transform .12s ease;
-      display: flex; align-items: center; gap: 14px;
+      display: flex; align-items: center; gap: 13px;
       user-select: none; -webkit-user-select: none;
       -webkit-tap-highlight-color: transparent; touch-action: manipulation;
     }
     .vote-card:active { transform: scale(0.97); }
-    .vote-card.selected { background: #0d2b17; border-color: var(--green); box-shadow: 0 0 0 1px var(--green), 0 4px 18px var(--green-glow); }
+    .vote-card.selected { background: #0d2b17; border-color: var(--green); box-shadow: 0 0 0 1px var(--green), 0 4px 16px var(--green-glow); }
     .vote-card.selected .p-radio { background: var(--green); border-color: var(--green); }
     .vote-card.selected .p-radio::after { opacity: 1; transform: scale(1); }
     .vote-card.selected .v-name { color: var(--green); }
-    .v-num { width: 30px; height: 30px; background: var(--border); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: var(--gray); flex-shrink: 0; transition: all var(--trans); }
-    .vote-card.selected .v-num { background: var(--green-dim); color: var(--green); }
-    .v-name { font-size: 14px; font-weight: 600; transition: color var(--trans); flex: 1; }
+    .vote-card.selected .v-num  { background: var(--green-dim); color: var(--green); }
+    .v-num  { width: 28px; height: 28px; background: var(--border); border-radius: 7px; display: flex; align-items: center; justify-content: center; font-size: 11px; font-weight: 700; color: var(--gray); flex-shrink: 0; transition: all var(--trans); }
+    .v-name { font-size: 13.5px; font-weight: 600; transition: color var(--trans); flex: 1; }
 
-    /* ── BUTTONS ── */
+    /* ══════════════════════════════
+       BUTTONS
+    ══════════════════════════════ */
     .btn-row { display: flex; gap: 10px; align-items: center; }
     .btn-primary {
-      background: var(--green); color: #000; border: none; border-radius: 14px;
-      padding: 17px 28px;
-      font-family: 'Montserrat', -apple-system, sans-serif;
-      font-size: 14px; font-weight: 800; cursor: pointer;
+      background: var(--green); color: #000; border: none; border-radius: 13px;
+      padding: 17px 24px; font-family: 'Montserrat', -apple-system, sans-serif;
+      font-size: 13.5px; font-weight: 800; cursor: pointer; letter-spacing: .3px;
+      text-transform: uppercase; flex: 1; min-height: 54px;
+      -webkit-tap-highlight-color: transparent; touch-action: manipulation;
       transition: opacity .15s, transform .12s ease;
-      letter-spacing: .4px; text-transform: uppercase; flex: 1;
-      -webkit-tap-highlight-color: transparent; touch-action: manipulation; min-height: 54px;
     }
-    .btn-primary:active { transform: scale(0.96); opacity: .9; }
-    .btn-primary:disabled { opacity: .28; pointer-events: none; }
+    .btn-primary:active { transform: scale(0.96); opacity: .88; }
+    .btn-primary:disabled { opacity: .25; pointer-events: none; }
     .btn-back {
       background: transparent; color: var(--gray); border: 1.5px solid var(--border);
-      border-radius: 14px; padding: 17px 18px;
-      font-family: 'Montserrat', -apple-system, sans-serif;
-      font-size: 13px; font-weight: 600; cursor: pointer;
+      border-radius: 13px; padding: 17px 17px; font-family: 'Montserrat', -apple-system, sans-serif;
+      font-size: 13px; font-weight: 600; cursor: pointer; min-height: 54px;
+      -webkit-tap-highlight-color: transparent; touch-action: manipulation;
       transition: border-color var(--trans), color var(--trans), transform .12s ease;
-      -webkit-tap-highlight-color: transparent; touch-action: manipulation; min-height: 54px;
     }
-    .btn-back:active { transform: scale(0.96); border-color: var(--gray); color: var(--white); }
+    .btn-back:active { transform: scale(0.96); border-color: #555; color: var(--white); }
 
-    /* ── THANK YOU ── */
-    .ty-screen { text-align: center; padding: 32px 0 0; }
-    .ty-icon { width: 76px; height: 76px; background: #0d2b17; border: 2px solid var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 34px; margin: 0 auto 24px; animation: popIn .5s cubic-bezier(.34,1.56,.64,1) .1s both; }
+    /* ══════════════════════════════
+       THANK YOU
+    ══════════════════════════════ */
+    .ty-screen { text-align: center; padding: 28px 0 0; }
+    .ty-icon { width: 72px; height: 72px; background: #0d2b17; border: 2px solid var(--green); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 30px; margin: 0 auto 22px; animation: popIn .45s cubic-bezier(.34,1.56,.64,1) .08s both; }
     @keyframes popIn { from{transform:scale(0);opacity:0} to{transform:scale(1);opacity:1} }
-    .ty-title { font-size: clamp(26px,6vw,36px); font-weight: 900; margin-bottom: 10px; letter-spacing: -1px; }
+    .ty-title { font-size: clamp(24px,5.5vw,34px); font-weight: 900; margin-bottom: 10px; letter-spacing: -1px; }
     .ty-title span { color: var(--green); }
-    .ty-desc { font-size: 14px; color: #aaa; line-height: 1.7; max-width: 360px; margin: 0 auto 28px; }
-    .ty-divider { width: 36px; height: 3px; background: var(--green); border-radius: 99px; margin: 0 auto 28px; }
-    .summary-grid { display: grid; gap: 10px; text-align: left; margin-bottom: 32px; }
-    .summary-item { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--green-dim); border-radius: var(--radius); padding: 13px 16px; }
-    .s-label { font-size: 10px; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 4px; }
-    .s-value { font-size: 13px; font-weight: 600; color: var(--white); line-height: 1.5; }
-    .s-count { color: var(--green); font-weight: 700; }
+    .ty-desc { font-size: 13.5px; color: var(--gray-lt); line-height: 1.7; max-width: 340px; margin: 0 auto 24px; }
+    .ty-line { width: 32px; height: 3px; background: var(--green); border-radius: 99px; margin: 0 auto 24px; }
+    .sum-grid { display: grid; gap: 9px; text-align: left; margin-bottom: 28px; }
+    .sum-item { background: var(--surface); border: 1px solid var(--border); border-left: 3px solid var(--green-dim); border-radius: var(--radius); padding: 12px 15px; }
+    .s-lbl { font-size: 9.5px; color: var(--gray); text-transform: uppercase; letter-spacing: 1px; font-weight: 700; margin-bottom: 3px; }
+    .s-val { font-size: 13px; font-weight: 600; color: var(--white); }
+    .s-cnt { color: var(--green); }
     .s-names { color: var(--gray); font-size: 11px; font-weight: 400; margin-top: 3px; line-height: 1.6; }
 
-    /* ── RIPPLE ── */
-    .ripple { position: absolute; border-radius: 50%; background: rgba(61,255,110,.15); transform: scale(0); animation: rippleAnim .55s linear; pointer-events: none; }
+    /* ══════════════════════════════
+       RIPPLE
+    ══════════════════════════════ */
+    .ripple { position: absolute; border-radius: 50%; background: rgba(61,255,110,.13); transform: scale(0); animation: rippleAnim .5s linear; pointer-events: none; }
     @keyframes rippleAnim { to { transform: scale(4); opacity: 0; } }
 
     ::-webkit-scrollbar { width: 3px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
-    ::-webkit-scrollbar-thumb { background: var(--border); border-radius: 99px; }
+    ::-webkit-scrollbar-thumb { background: #2a2a2a; border-radius: 99px; }
 
-    @media (max-width: 400px) {
-      .candidates-grid { grid-template-columns: repeat(2, 1fr); }
+    /* ══════════════════════════════
+       RESPONSIVE
+    ══════════════════════════════ */
+    @media (max-width: 540px) {
+      .hero { grid-template-columns: 1fr; gap: 16px; }
+      .welcome-title { font-size: clamp(34px, 10vw, 46px); align-items: flex-start; }
+      .stat-chips { grid-template-columns: 1fr 1fr; }
+      .cand-grid { grid-template-columns: repeat(2, 1fr); }
     }
-    @media (min-width: 600px) {
-      .candidates-grid { grid-template-columns: repeat(3, 1fr); }
+    @media (min-width: 541px) and (max-width: 680px) {
+      .welcome-title { font-size: clamp(28px, 5vw, 40px); }
+    }
+    @media (min-width: 640px) {
+      .cand-grid { grid-template-columns: repeat(3, 1fr); }
     }
   </style>
 </head>
@@ -283,12 +331,19 @@
 <!-- TOP BAR -->
 <div class="topbar">
   <div class="logo">
-    <div class="logo-circle">🐻</div>
-    <div class="logo-text">Pulso<span>GTO</span></div>
+    <div class="logo-mark">BD</div>
+    <div class="logo-text-wrap">
+      <span class="logo-name">El Bajío en Datos</span>
+      <span class="logo-sub">León, Guanajuato</span>
+    </div>
+  </div>
+  <div class="badge-live">
+    <span class="badge-dot"></span>
+    Encuesta activa
   </div>
 </div>
 
-<!-- PROGRESS -->
+<!-- PROGRESS (hidden on welcome) -->
 <div class="progress-wrap" id="progressWrap" style="display:none;">
   <div class="progress-meta">
     <span class="step-label" id="stepLabel">Pregunta 1 de 4</span>
@@ -302,6 +357,7 @@
 <div id="app"></div>
 
 <script>
+/* ── DATA ── */
 const CANDIDATES = [
   "Toño Guzmán","Alan Márquez","Luis Ernesto Ayala Torres","Jorge Jiménez Lona",
   "Jorge Espadas Galván","Antares Vázquez Alatorre","Enrique Alba Martínez",
@@ -310,113 +366,112 @@ const CANDIDATES = [
   "Arturo Sánchez Castellanos","Kikis Magaña"
 ];
 const PARTIES = [
-  { abbr:"PAN",          name:"Partido Acción Nacional",    color:"#003DA5", emoji:"🔵" },
-  { abbr:"MORENA",       name:"Morena",                     color:"#8B1A1A", emoji:"🔴" },
-  { abbr:"MC",           name:"Movimiento Ciudadano",       color:"#FF6200", emoji:"🟠" },
-  { abbr:"Partido Verde",name:"Partido Verde Ecologista",   color:"#2E7D32", emoji:"🟢" }
+  {abbr:"PAN",          name:"Partido Acción Nacional",  color:"#003DA5", emoji:"🔵"},
+  {abbr:"MORENA",       name:"Morena",                   color:"#8B1A1A", emoji:"🔴"},
+  {abbr:"MC",           name:"Movimiento Ciudadano",     color:"#FF6200", emoji:"🟠"},
+  {abbr:"Partido Verde",name:"Partido Verde Ecologista", color:"#2E7D32", emoji:"🟢"}
 ];
-const MAX_REJECT = 3;
+const MAX_Q2 = 3;
 
+/* ── STATE ── */
 const state = {
-  step: 0,
-  q1: [], q2: [], q3: null, q4: null,
-  order1: shuffle([...CANDIDATES]),
-  order2: shuffle([...CANDIDATES]),
-  order4: shuffle([...CANDIDATES])
+  step:0, q1:[], q2:[], q3:null, q4:null,
+  o1: shuffle([...CANDIDATES]),
+  o2: shuffle([...CANDIDATES]),
+  o4: shuffle([...CANDIDATES])
 };
 
 function shuffle(a) {
-  for (let i = a.length - 1; i > 0; i--) {
-    const j = Math.floor(Math.random() * (i + 1));
-    [a[i], a[j]] = [a[j], a[i]];
-  }
+  for (let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}
   return a;
 }
-function initials(n) { return n.split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase(); }
+function initials(n){ return n.split(' ').filter(Boolean).slice(0,2).map(w=>w[0]).join('').toUpperCase(); }
 function ripple(e, el) {
-  const r = document.createElement('span');
-  r.className = 'ripple';
-  const rect = el.getBoundingClientRect();
-  const size = Math.max(rect.width, rect.height);
-  const cx = (e.touches ? e.touches[0].clientX : e.clientX) - rect.left - size/2;
-  const cy = (e.touches ? e.touches[0].clientY : e.clientY) - rect.top  - size/2;
-  r.style.cssText = `width:${size}px;height:${size}px;left:${cx}px;top:${cy}px`;
-  el.appendChild(r);
-  setTimeout(() => r.remove(), 600);
+  const r=document.createElement('span'); r.className='ripple';
+  const rect=el.getBoundingClientRect(), size=Math.max(rect.width,rect.height);
+  const cx=(e.touches?e.touches[0].clientX:e.clientX)-rect.left-size/2;
+  const cy=(e.touches?e.touches[0].clientY:e.clientY)-rect.top-size/2;
+  r.style.cssText=`width:${size}px;height:${size}px;left:${cx}px;top:${cy}px`;
+  el.appendChild(r); setTimeout(()=>r.remove(),550);
 }
 
+/* ── NAV ── */
 const app = document.getElementById('app');
-const SCREENS = [renderWelcome, renderQ1, renderQ2, renderQ3, renderQ4, renderThanks];
+const SCREENS = [renderWelcome,renderQ1,renderQ2,renderQ3,renderQ4,renderThanks];
 
 function goTo(n) {
   const cur = app.querySelector('.screen');
-  if (cur) {
-    cur.classList.add('out');
-    setTimeout(() => { app.innerHTML=''; SCREENS[n](); window.scrollTo({top:0,behavior:'smooth'}); }, 220);
-  } else { SCREENS[n](); }
+  if (cur) { cur.classList.add('out'); setTimeout(()=>{app.innerHTML='';SCREENS[n]();window.scrollTo({top:0,behavior:'smooth'});},200); }
+  else SCREENS[n]();
 }
 
 function updateProgress(step) {
-  const pw = document.getElementById('progressWrap');
-  if (step === 0) { pw.style.display='none'; return; }
-  pw.style.display = 'block';
-  const pct = Math.round((step / 4) * 100);
-  document.getElementById('progressFill').style.width = pct + '%';
-  document.getElementById('stepLabel').textContent = `Pregunta ${step} de 4`;
-  document.getElementById('stepPct').textContent = pct + '%';
+  const pw=document.getElementById('progressWrap');
+  if(step===0){pw.style.display='none';return;}
+  pw.style.display='block';
+  const pct=Math.round((step/4)*100);
+  document.getElementById('progressFill').style.width=pct+'%';
+  document.getElementById('stepLabel').textContent=`Pregunta ${step} de 4`;
+  document.getElementById('stepPct').textContent=pct+'%';
 }
 
 /* ── WELCOME ── */
 function renderWelcome() {
-  state.step = 0;
   updateProgress(0);
-  app.innerHTML = `
+  app.innerHTML=`
     <div class="screen">
-      <div class="welcome-badge"><span class="badge-dot"></span>Encuesta activa</div>
-      <h1 class="welcome-title">¿Quién debe<br>gobernar<br><span class="hl">León<br>en 2026?</span></h1>
 
-      <div class="info-cards">
-        <div class="info-card wide">
-          <div class="info-card-label">Sobre esta encuesta</div>
-          <div class="info-card-text">Queremos conocer tu opinión sobre los candidatos para la Presidencia Municipal de León.</div>
+      <div class="hero">
+        <!-- LEFT: título grande -->
+        <div class="hero-title-col">
+          <h1 class="welcome-title">¿Quién debe gobernar León en 2026?</h1>
         </div>
-        <div class="info-card">
-          <div class="info-card-num">4</div>
-          <div class="info-card-sub">Preguntas</div>
-        </div>
-        <div class="info-card">
-          <div class="info-card-num">&lt;3'</div>
-          <div class="info-card-sub">Minutos</div>
+
+        <!-- RIGHT: descripción + stats -->
+        <div class="hero-info-col">
+          <div class="info-desc">
+            Queremos conocer tu opinión sobre los candidatos para la <strong style="color:var(--white)">Presidencia Municipal de León.</strong>
+          </div>
+          <div class="stat-chips">
+            <div class="stat-chip">
+              <div class="stat-chip-num">4</div>
+              <div class="stat-chip-label">Preguntas</div>
+            </div>
+            <div class="stat-chip">
+              <div class="stat-chip-num">&lt;3'</div>
+              <div class="stat-chip-label">Minutos</div>
+            </div>
+          </div>
         </div>
       </div>
 
-      <div class="btn-row">
-        <button class="btn-primary" onclick="goTo(1)">Comenzar encuesta →</button>
+      <div class="cta-block">
+        <div class="btn-row">
+          <button class="btn-primary" onclick="goTo(1)">Comenzar encuesta →</button>
+        </div>
+        <p class="privacy-note">
+          <strong>Tus respuestas son 100% anónimas.</strong> No pedimos tu nombre, teléfono ni ningún dato personal.<br>
+          Esta información se usa únicamente para análisis ciudadano y nunca será vinculada a tu identidad.
+        </p>
       </div>
 
-      <p class="privacy-small">
-        <strong>Tus respuestas son 100% anónimas.</strong> No pedimos tu nombre, teléfono ni ningún dato personal.
-        Esta información se usa únicamente para análisis ciudadano y nunca será vinculada a tu identidad.
-      </p>
-    </div>
-  `;
+    </div>`;
 }
 
 /* ── Q1: RECONOCIMIENTO ── */
 function renderQ1() {
-  state.step = 1;
-  updateProgress(1);
-  app.innerHTML = `
+  state.step=1; updateProgress(1);
+  app.innerHTML=`
     <div class="screen">
       <div class="q-number">Pregunta 1 de 4 · Reconocimiento</div>
       <h2 class="q-title">"De los siguientes personajes públicos en León, ¿a quiénes conoce o ha escuchado nombrar?"</h2>
-      <p class="q-subtitle">Seleccione todos los que apliquen &nbsp;·&nbsp; <span class="sel-count" id="cnt1">${state.q1.length} seleccionados</span></p>
-      <div class="candidates-grid" id="grid1">
-        ${state.order1.map(c=>`
-          <div class="candidate-card ${state.q1.includes(c)?'selected':''}"
-               data-name="${c}" onclick="toggleCand(event,this,'q1','cnt1','nb1',null)">
+      <p class="q-sub">Seleccione todos los que apliquen &nbsp;·&nbsp; <span class="sel-count" id="cnt1">${state.q1.length} seleccionados</span></p>
+      <div class="cand-grid" id="grid1">
+        ${state.o1.map(c=>`
+          <div class="cand-card ${state.q1.includes(c)?'selected':''}" data-name="${c}"
+               onclick="toggleCand(event,this,'q1','cnt1','nb1',null)">
             <div class="c-check">✓</div>
-            <div class="c-initial">${initials(c)}</div>
+            <div class="c-init">${initials(c)}</div>
             <div class="c-name">${c}</div>
           </div>`).join('')}
       </div>
@@ -424,32 +479,24 @@ function renderQ1() {
         <button class="btn-back" onclick="goTo(0)">← Atrás</button>
         <button class="btn-primary" id="nb1" onclick="goTo(2)" ${state.q1.length===0?'disabled':''}>Siguiente →</button>
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
-/* ── Q2: RECHAZO (máx 3) ── */
+/* ── Q2: RECHAZO máx 3 ── */
 function renderQ2() {
-  state.step = 2;
-  updateProgress(2);
-  const atMax = state.q2.length >= MAX_REJECT;
-  app.innerHTML = `
+  state.step=2; updateProgress(2);
+  const atMax=state.q2.length>=MAX_Q2;
+  app.innerHTML=`
     <div class="screen">
       <div class="q-number">Pregunta 2 de 4 · Rechazo</div>
       <h2 class="q-title">"Independientemente de su preferencia política, ¿por cuál de estas personas USTED NUNCA VOTARÍA para la Presidencia Municipal de León?"</h2>
-      <p class="q-subtitle">
-        Máximo 3 opciones &nbsp;·&nbsp;
-        <span id="cnt2Wrap">
-          <span class="sel-count" id="cnt2">${state.q2.length}</span>/3 seleccionados
-          ${atMax ? ' &nbsp;<span class="max-note">· Límite alcanzado</span>' : ''}
-        </span>
-      </p>
-      <div class="candidates-grid" id="grid2">
-        ${state.order2.map(c=>`
-          <div class="candidate-card ${state.q2.includes(c)?'selected':''} ${(atMax && !state.q2.includes(c))?'maxed':''}"
-               data-name="${c}" onclick="toggleCand(event,this,'q2','cnt2','nb2',${MAX_REJECT})">
+      <p class="q-sub">Máximo 3 opciones &nbsp;·&nbsp; <span class="sel-count" id="cnt2">${state.q2.length}</span>/3 seleccionados${atMax?' &nbsp;<span class="max-note">· Límite alcanzado</span>':''}</p>
+      <div class="cand-grid" id="grid2">
+        ${state.o2.map(c=>`
+          <div class="cand-card ${state.q2.includes(c)?'selected':''} ${atMax&&!state.q2.includes(c)?'maxed':''}"
+               data-name="${c}" onclick="toggleCand(event,this,'q2','cnt2','nb2',${MAX_Q2})">
             <div class="c-check">✓</div>
-            <div class="c-initial">${initials(c)}</div>
+            <div class="c-init">${initials(c)}</div>
             <div class="c-name">${c}</div>
           </div>`).join('')}
       </div>
@@ -457,25 +504,23 @@ function renderQ2() {
         <button class="btn-back" onclick="goTo(1)">← Atrás</button>
         <button class="btn-primary" id="nb2" onclick="goTo(3)" ${state.q2.length===0?'disabled':''}>Siguiente →</button>
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
 /* ── Q3: CONFIANZA PARTIDO ── */
 function renderQ3() {
-  state.step = 3;
-  updateProgress(3);
-  app.innerHTML = `
+  state.step=3; updateProgress(3);
+  app.innerHTML=`
     <div class="screen">
       <div class="q-number">Pregunta 3 de 4 · Posicionamiento</div>
       <h2 class="q-title">"¿En cuál de los siguientes partidos confía más para gobernar León?"</h2>
-      <p class="q-subtitle">Seleccione una opción</p>
-      <div class="party-options" id="grpQ3">
+      <p class="q-sub">Seleccione una opción</p>
+      <div class="party-list" id="grpQ3">
         ${PARTIES.map(p=>`
-          <div class="party-card ${state.q3===p.abbr?'selected':''}"
-               data-val="${p.abbr}" onclick="selectParty(event,this,'q3','grpQ3','nb3')">
+          <div class="party-card ${state.q3===p.abbr?'selected':''}" data-val="${p.abbr}"
+               onclick="selectParty(event,this,'q3','grpQ3','nb3')">
             <div class="p-radio"></div>
-            <div class="p-color" style="background:${p.color}20;border:1px solid ${p.color}40">${p.emoji}</div>
+            <div class="p-emoji" style="background:${p.color}18;border:1px solid ${p.color}35">${p.emoji}</div>
             <div>
               <div class="p-name">${p.abbr}</div>
               <div class="p-desc">${p.name}</div>
@@ -486,137 +531,108 @@ function renderQ3() {
         <button class="btn-back" onclick="goTo(2)">← Atrás</button>
         <button class="btn-primary" id="nb3" onclick="goTo(4)" ${state.q3?'':'disabled'}>Siguiente →</button>
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
 /* ── Q4: INTENCIÓN DE VOTO ── */
 function renderQ4() {
-  state.step = 4;
-  updateProgress(4);
-  const list = [...state.order4, "— Ninguno / Anularía mi voto", "— Aún no lo he decidido"];
-  app.innerHTML = `
+  state.step=4; updateProgress(4);
+  const list=[...state.o4,"— Ninguno / Anularía mi voto","— Aún no lo he decidido"];
+  app.innerHTML=`
     <div class="screen">
       <div class="q-number">Pregunta 4 de 4 · Intención de Voto</div>
       <h2 class="q-title">"Si hoy fueran las elecciones para Presidente Municipal de León, ¿por quién votaría?"</h2>
-      <p class="q-subtitle">Seleccione una opción</p>
-      <div class="vote-options" id="voteGrid">
+      <p class="q-sub">Seleccione una opción</p>
+      <div class="vote-list" id="voteGrid">
         ${list.map((c,i)=>{
-          const isExtra = c.startsWith('—');
-          const display = c.replace('— ','');
-          return `
-            <div class="vote-card ${state.q4===c?'selected':''}"
-                 data-val="${c}" onclick="selectVote(event,this)">
-              <div class="p-radio"></div>
-              ${!isExtra?`<div class="v-num">${String(i+1).padStart(2,'0')}</div>`:`<div style="width:30px;flex-shrink:0"></div>`}
-              <div class="v-name">${display}</div>
-            </div>`;
+          const extra=c.startsWith('—'), lbl=c.replace('— ','');
+          return `<div class="vote-card ${state.q4===c?'selected':''}" data-val="${c}" onclick="selectVote(event,this)">
+            <div class="p-radio"></div>
+            ${!extra?`<div class="v-num">${String(i+1).padStart(2,'0')}</div>`:`<div style="width:28px;flex-shrink:0"></div>`}
+            <div class="v-name">${lbl}</div>
+          </div>`;
         }).join('')}
       </div>
       <div class="btn-row">
         <button class="btn-back" onclick="goTo(3)">← Atrás</button>
         <button class="btn-primary" id="nb4" onclick="goTo(5)" ${state.q4?'':'disabled'}>Enviar respuestas →</button>
       </div>
-    </div>
-  `;
+    </div>`;
 }
 
 /* ── THANKS ── */
 function renderThanks() {
-  state.step = 5;
   updateProgress(4);
-  document.getElementById('progressFill').style.width = '100%';
-  app.innerHTML = `
+  setTimeout(()=>{ const f=document.getElementById('progressFill'); if(f) f.style.width='100%'; },50);
+  app.innerHTML=`
     <div class="screen ty-screen">
       <div class="ty-icon">✓</div>
-      <h2 class="ty-title">¡Gracias por<br><span>participar</span>!</h2>
-      <p class="ty-desc">Tu opinión ciudadana es valiosa. Tus respuestas fueron registradas de forma <strong style="color:var(--white)">anónima y confidencial</strong>.</p>
-      <div class="ty-divider"></div>
-      <div class="summary-grid">
-        <div class="summary-item">
-          <div class="s-label">P1 · Reconocimiento</div>
-          <div class="s-value"><span class="s-count">${state.q1.length} reconocido${state.q1.length!==1?'s':''}</span></div>
+      <h2 class="ty-title">¡Gracias por<br><span>participar!</span></h2>
+      <p class="ty-desc">Tu opinión ciudadana es valiosa. Tus respuestas quedaron registradas de forma <strong style="color:var(--white)">anónima y confidencial.</strong></p>
+      <div class="ty-line"></div>
+      <div class="sum-grid">
+        <div class="sum-item">
+          <div class="s-lbl">P1 · Reconocimiento</div>
+          <div class="s-val"><span class="s-cnt">${state.q1.length} reconocido${state.q1.length!==1?'s':''}</span></div>
           ${state.q1.length?`<div class="s-names">${state.q1.join(' · ')}</div>`:''}
         </div>
-        <div class="summary-item">
-          <div class="s-label">P2 · Rechazo</div>
-          <div class="s-value"><span class="s-count">${state.q2.length||'Ninguno'}</span></div>
+        <div class="sum-item">
+          <div class="s-lbl">P2 · Rechazo</div>
+          <div class="s-val"><span class="s-cnt">${state.q2.length?state.q2.length+' seleccionado'+(state.q2.length!==1?'s':''):'Ninguno'}</span></div>
           ${state.q2.length?`<div class="s-names">${state.q2.join(' · ')}</div>`:''}
         </div>
-        <div class="summary-item">
-          <div class="s-label">P3 · Confianza en partido</div>
-          <div class="s-value"><span class="s-count">${state.q3||'—'}</span></div>
+        <div class="sum-item">
+          <div class="s-lbl">P3 · Confianza en partido</div>
+          <div class="s-val"><span class="s-cnt">${state.q3||'—'}</span></div>
         </div>
-        <div class="summary-item">
-          <div class="s-label">P4 · Intención de voto</div>
-          <div class="s-value"><span class="s-count">${(state.q4||'—').replace('— ','')}</span></div>
+        <div class="sum-item">
+          <div class="s-lbl">P4 · Intención de voto</div>
+          <div class="s-val"><span class="s-cnt">${(state.q4||'—').replace('— ','')}</span></div>
         </div>
       </div>
       <button class="btn-primary" onclick="resetSurvey()">Nueva respuesta</button>
-    </div>
-  `;
+    </div>`;
 }
 
-/* ── ACTIONS ── */
-function toggleCand(e, el, key, cntId, btnId, maxSel) {
-  const name = el.dataset.name;
-  const idx = state[key].indexOf(name);
-  if (idx === -1) {
-    if (maxSel && state[key].length >= maxSel) return;
-    state[key].push(name);
-    el.classList.add('selected');
-    ripple(e, el);
-  } else {
-    state[key].splice(idx, 1);
-    el.classList.remove('selected');
-  }
-
-  // update counter
-  const cnt = document.getElementById(cntId);
-  if (cnt) cnt.textContent = state[key].length;
-
-  // handle maxed state for Q2
-  if (maxSel) {
-    const atMax = state[key].length >= maxSel;
-    const wrapEl = document.getElementById('cnt2Wrap');
-    if (wrapEl) {
-      wrapEl.innerHTML = `<span class="sel-count" id="cnt2">${state[key].length}</span>/3 seleccionados${atMax?' &nbsp;<span class="max-note">· Límite alcanzado</span>':''}`;
-    }
-    document.querySelectorAll('#grid2 .candidate-card').forEach(card => {
-      if (atMax && !state[key].includes(card.dataset.name)) card.classList.add('maxed');
-      else card.classList.remove('maxed');
+/* ── ACCIONES ── */
+function toggleCand(e,el,key,cntId,btnId,maxSel) {
+  const name=el.dataset.name, idx=state[key].indexOf(name);
+  if(idx===-1){
+    if(maxSel&&state[key].length>=maxSel) return;
+    state[key].push(name); el.classList.add('selected'); ripple(e,el);
+  } else { state[key].splice(idx,1); el.classList.remove('selected'); }
+  const cnt=document.getElementById(cntId);
+  if(cnt) cnt.textContent=state[key].length;
+  if(maxSel){
+    const atMax=state[key].length>=maxSel;
+    const sub=document.querySelector('.q-sub');
+    if(sub) sub.innerHTML=`Máximo 3 opciones &nbsp;·&nbsp; <span class="sel-count" id="cnt2">${state[key].length}</span>/3 seleccionados${atMax?' &nbsp;<span class="max-note">· Límite alcanzado</span>':''}`;
+    document.querySelectorAll(`#grid2 .cand-card`).forEach(c=>{
+      if(atMax&&!state[key].includes(c.dataset.name)) c.classList.add('maxed');
+      else c.classList.remove('maxed');
     });
   }
-
-  const btn = document.getElementById(btnId);
-  if (btn) btn.disabled = state[key].length === 0;
+  const btn=document.getElementById(btnId);
+  if(btn) btn.disabled=state[key].length===0;
 }
 
-function selectParty(e, el, key, groupId, btnId) {
-  ripple(e, el);
+function selectParty(e,el,key,groupId,btnId){
+  ripple(e,el);
   document.querySelectorAll(`#${groupId} .party-card`).forEach(c=>c.classList.remove('selected'));
-  el.classList.add('selected');
-  state[key] = el.dataset.val;
-  const btn = document.getElementById(btnId);
-  if (btn) btn.disabled = false;
+  el.classList.add('selected'); state[key]=el.dataset.val;
+  const btn=document.getElementById(btnId); if(btn) btn.disabled=false;
 }
 
-function selectVote(e, el) {
-  ripple(e, el);
+function selectVote(e,el){
+  ripple(e,el);
   document.querySelectorAll('#voteGrid .vote-card').forEach(c=>c.classList.remove('selected'));
-  el.classList.add('selected');
-  state.q4 = el.dataset.val;
-  const btn = document.getElementById('nb4');
-  if (btn) btn.disabled = false;
+  el.classList.add('selected'); state.q4=el.dataset.val;
+  const btn=document.getElementById('nb4'); if(btn) btn.disabled=false;
 }
 
-function resetSurvey() {
-  Object.assign(state, {
-    step:0, q1:[], q2:[], q3:null, q4:null,
-    order1: shuffle([...CANDIDATES]),
-    order2: shuffle([...CANDIDATES]),
-    order4: shuffle([...CANDIDATES])
-  });
+function resetSurvey(){
+  Object.assign(state,{step:0,q1:[],q2:[],q3:null,q4:null,
+    o1:shuffle([...CANDIDATES]),o2:shuffle([...CANDIDATES]),o4:shuffle([...CANDIDATES])});
   goTo(0);
 }
 
