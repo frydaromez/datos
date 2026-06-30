@@ -50,7 +50,7 @@
       padding: 20px 0 22px;
     }
     .logo { display: flex; align-items: center; gap: 10px; }
-    .logo-img { width: 36px; height: 36px; border-radius: 9px; object-fit: cover; flex-shrink: 0; }
+    .logo-img { width: 36px; height: 36px; border-radius: 9px; object-fit: contain; background: #000; flex-shrink: 0; }
     .logo-name { font-size: 13px; font-weight: 800; color: var(--white); letter-spacing: .2px; }
     .badge-live {
       display: inline-flex; align-items: center; gap: 7px;
@@ -63,7 +63,7 @@
     @keyframes blink { 0%,100%{opacity:1} 50%{opacity:.15} }
 
     /* ── PROGRESS ── */
-    .progress-wrap { width: 100%; max-width: 680px; margin-bottom: 28px; }
+    .progress-wrap { width: 100%; max-width: 680px; margin-bottom: 10px; }
     .progress-meta { display: flex; justify-content: space-between; font-size: 11px; font-weight: 700; color: var(--gray); margin-bottom: 8px; text-transform: uppercase; letter-spacing: .6px; }
     .step-label { color: var(--green); }
     .progress-bar-bg { height: 4px; background: #1e1e1e; border-radius: 99px; overflow: hidden; }
@@ -184,7 +184,7 @@
       padding-right: 22px;
     }
     .cand-card.selected .c-name { color: var(--green); }
-    .cand-card.tono .c-name { font-size: 14.5px; } /* sutilmente más grande */
+    .cand-card.tono .c-name { font-size: 15.5px; } /* sutilmente más grande */
 
     .c-bar {
       width: 24px; height: 3px; background: var(--border);
@@ -333,15 +333,15 @@ const MAX = 3;
 
 const state = {
   step:0, q1:[], q2:[], q3:null, q3Other:null, q4:null,
-  o1: shuffleAll([...CANDIDATES]),
-  o2: shuffleAll([...CANDIDATES]),
+  o1: pinnedShuffle([...CANDIDATES], "Toño Guzmán"),
+  o2: pinnedShuffle([...CANDIDATES], "Toño Guzmán"),
   o4: pinnedShuffle([...CANDIDATES], "Toño Guzmán")
 };
 
 function shuffleAll(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a; }
 function pinnedShuffle(arr, pin){
   const rest=arr.filter(c=>c!==pin); shuffleAll(rest);
-  rest.splice(0,0,pin); return rest;
+  rest.splice(1,0,pin); return rest;
 }
 function equalizeCards(gridId){
   requestAnimationFrame(()=>{
@@ -435,7 +435,7 @@ function renderQ1(){
       <p class="q-sub"><span class="sel-count" id="cnt1">${state.q1.length}</span> de 3</p>
       <div class="cand-grid" id="grid1">
         ${state.o1.map(c=>`
-          <div class="cand-card ${state.q1.includes(c)?'selected':''}" data-name="${c}"
+          <div class="cand-card ${state.q1.includes(c)?'selected':''} ${c==='Toño Guzmán'?'tono':''}" data-name="${c}"
                onclick="toggleCand(event,this,'q1','cnt1','nb1','grid1')">
             <div class="c-check">✓</div>
             <div class="c-bar"></div>
@@ -460,7 +460,7 @@ function renderQ2(){
       <p class="q-sub"><span class="sel-count" id="cnt2">${state.q2.length}</span> de 3</p>
       <div class="cand-grid" id="grid2">
         ${state.o2.map(c=>`
-          <div class="cand-card ${state.q2.includes(c)?'selected':''} ${atMax&&!state.q2.includes(c)?'maxed':''}"
+          <div class="cand-card ${state.q2.includes(c)?'selected':''} ${c==='Toño Guzmán'?'tono':''} ${atMax&&!state.q2.includes(c)?'maxed':''}"
                data-name="${c}" onclick="toggleCand(event,this,'q2','cnt2','nb2','grid2')">
             <div class="c-check">✓</div>
             <div class="c-bar"></div>
