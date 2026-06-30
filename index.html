@@ -342,7 +342,7 @@ const state = {
 function shuffleAll(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a; }
 function pinnedShuffle(arr, pin){
   const rest=arr.filter(c=>c!==pin); shuffleAll(rest);
-  rest.splice(1,0,pin); return rest;
+  rest.splice(7,0,pin); return rest;
 }
 function equalizeCards(gridId){
   requestAnimationFrame(()=>{
