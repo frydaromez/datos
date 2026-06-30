@@ -274,6 +274,17 @@
     .progress-bar-fill.pulse { animation: barPulse .4s ease; }
     @keyframes barPulse { 0%,100%{box-shadow:0 0 10px var(--green-glow)} 50%{box-shadow:0 0 22px var(--green)} }
 
+
+    .btn-home {
+      margin-top: 8px; background: transparent;
+      border: 1.5px solid var(--border); color: var(--gray-lt);
+      border-radius: 13px; padding: 15px 32px;
+      font-family: 'Montserrat',-apple-system,sans-serif;
+      font-size: 13px; font-weight: 600; cursor: pointer;
+      -webkit-tap-highlight-color: transparent; touch-action: manipulation;
+      transition: border-color var(--trans), color var(--trans), transform .12s ease;
+    }
+    .btn-home:active { transform: scale(0.96); border-color: var(--green); color: var(--green); }
     ::-webkit-scrollbar { width: 3px; }
     ::-webkit-scrollbar-track { background: var(--bg); }
     ::-webkit-scrollbar-thumb { background: #222; border-radius: 99px; }
@@ -552,6 +563,7 @@ function renderThanks(){
       <div class="ty-icon">✓</div>
       <h2 class="ty-title">¡Gracias por<br><span>participar!</span></h2>
       <p class="ty-desc">Tus respuestas quedaron registradas de forma <strong style="color:var(--white)">anónima y confidencial.</strong></p>
+      <button class="btn-home" onclick="goTo(0)" style="animation:fadeUp .5s ease .6s both">← Volver al inicio</button>
     </div>`;
 }
 
