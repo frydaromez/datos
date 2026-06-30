@@ -48,21 +48,18 @@
       position: sticky; top: 0; z-index: 100;
       background: rgba(10,10,10,.96);
       backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
-      padding: calc(env(safe-area-inset-top,0px) + 10px) 20px 12px;
+      padding: calc(env(safe-area-inset-top,0px) + 10px) 20px 0;
       margin: 0 -20px; width: calc(100% + 40px);
-      border-bottom: 1px solid #1a1a1a;
+      border-bottom: 1px solid #1e1e1e;
     }
-    .sticky-header .topbar { padding: 0 0 12px; }
+    .sticky-header .topbar { padding: 0 0 10px; }
     .sticky-header .progress-wrap { margin-bottom: 0; }
+    .sticky-header .q-sticky { padding: 10px 0 10px; border-top: 1px solid #1a1a1a; }
 
     /* ── STICKY Q-HEADER ── */
     .q-sticky {
-      position: sticky; top: var(--sticky-top, 90px); z-index: 90;
-      background: rgba(10,10,10,.96);
-      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
-      padding: 10px 0 8px;
-      margin: 0 0 4px;
-      border-bottom: 1px solid #1a1a1a;
+      padding: 10px 0 6px;
+      border-top: 1px solid #1a1a1a;
     }
     .q-sticky .q-title  { margin-bottom: 4px; }
     .q-sticky .q-sub    { margin-bottom: 0; }
@@ -245,7 +242,14 @@
     .cand-card.selected .c-bar { background: var(--green); width: 36px; }
 
     /* ── OTRO INPUT ── */
-    .otro-input-wrap { margin-top: 10px; animation: fadeUp .25s ease; }
+    .otro-input-wrap {
+      margin-top: 0; overflow: hidden;
+      max-height: 0; opacity: 0;
+      transition: max-height .38s cubic-bezier(.4,0,.2,1), opacity .28s ease, margin-top .3s ease;
+    }
+    .otro-input-wrap.open {
+      max-height: 90px; opacity: 1; margin-top: 12px;
+    }
     .otro-input {
       width: 100%; background: #111; border: 1.5px solid var(--green-dim);
       border-radius: 10px; padding: 12px 14px; color: var(--white);
@@ -459,9 +463,13 @@ function showAlertToast(msg){
 const app=document.getElementById('app');
 const SCREENS=[renderWelcome,renderQ1,renderQ2,renderQ3,renderQ4,renderThanks];
 
-function setStickyTop(){
+function hoistQSticky(){
   const sh=document.querySelector('.sticky-header');
-  if(sh) document.documentElement.style.setProperty('--sticky-top', sh.offsetHeight+'px');
+  const qs=document.querySelector('.q-sticky');
+  if(sh && qs && !sh.contains(qs)) sh.appendChild(qs);
+}
+function setStickyTop(){
+  hoistQSticky();
 }
 function goTo(n){
   const cur=app.querySelector('.screen');
@@ -598,7 +606,7 @@ function renderQ3(){
             </div>
           </div>`).join('')}
       </div>
-      <div class="otro-input-wrap" id="otroWrap" style="display:${isOtro?'block':'none'}">
+      <div class="otro-input-wrap${isOtro?' open':''}" id="otroWrap">
         <input class="otro-input" id="otroText" type="text" maxlength="60"
                placeholder="¿Cuál partido?" value="${state.q3Other||''}"
                oninput="onOtroInput(this.value)" />
@@ -702,8 +710,8 @@ function selectParty(e,el,key,groupId,btnId){
   const wrap=document.getElementById('otroWrap');
   if(wrap){
     const isOtro=el.dataset.val==='Otro';
-    wrap.style.display=isOtro?'block':'none';
-    if(isOtro){ setTimeout(()=>{ const i=document.getElementById('otroText'); if(i) i.focus(); },80); }
+    if(isOtro){ wrap.classList.add('open'); setTimeout(()=>{ const i=document.getElementById('otroText'); if(i) i.focus(); },320); }
+    else { wrap.classList.remove('open'); }
   }
   const btn=document.getElementById(btnId);
   if(btn) btn.disabled=(el.dataset.val==='Otro'&&!state.q3Other);
