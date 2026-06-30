@@ -605,7 +605,7 @@ function renderQ3(){
 function renderQ4(){
   state.step=4; updateProgress(4);
   updateQHeader('<p class="q-title">Si <strong>hoy fueran las elecciones</strong> para Presidente Municipal de León <strong>¿por quién votaría?</strong></p><p class="q-sub">Seleccione una opción</p>');
-  const extras=["Ninguno / Anularía mi voto","Aún no lo he decidido"];
+  const extras=[];
   app.innerHTML=`
     <div class="screen">
       <div class="cand-grid" id="voteGrid">
