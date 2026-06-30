@@ -453,15 +453,15 @@ function renderQ1(){
 /* ── Q2 ── */
 function renderQ2(){
   state.step=2; updateProgress(2);
-  const atMax=state.q2.length>=MAX;
+  const atMax=state.q2.length>=1;
   app.innerHTML=`
     <div class="screen">
       <p class="q-title">Independientemente de su preferencia política ¿por cuál de estas personas <strong>USTED NUNCA VOTARÍA</strong> para la Presidencia Municipal de León?</p>
-      <p class="q-sub"><span class="sel-count" id="cnt2">${state.q2.length}</span> de 3</p>
+      <p class="q-sub">Seleccione una opción</p>
       <div class="cand-grid" id="grid2">
         ${state.o2.map(c=>`
           <div class="cand-card ${state.q2.includes(c)?'selected':''} ${c==='Toño Guzmán'?'tono':''} ${atMax&&!state.q2.includes(c)?'maxed':''}"
-               data-name="${c}" onclick="toggleCand(event,this,'q2','cnt2','nb2','grid2')">
+               data-name="${c}" onclick="toggleCand(event,this,'q2',null,'nb2','grid2',1)">
             <div class="c-check">✓</div>
             <div class="c-bar"></div>
             <div class="c-name">${c}</div>
@@ -565,19 +565,22 @@ function pulseBar(){
   setTimeout(()=>f.classList.remove('pulse'),450);
 }
 
-function toggleCand(e,el,key,cntId,btnId,gridId){
+function toggleCand(e,el,key,cntId,btnId,gridId,maxSel){
+  const lim=maxSel||MAX;
   const name=el.dataset.name, idx=state[key].indexOf(name);
   if(idx===-1){
-    if(state[key].length>=MAX){ showToast('Solo son 3 — ya completaste esta pregunta ✓'); return; }
+    if(state[key].length>=lim){
+      if(lim===1){ state[key]=[]; document.querySelectorAll(`#${gridId} .cand-card`).forEach(c=>c.classList.remove('selected','pop')); }
+      else { showToast('Solo son 3 — ya completaste esta pregunta ✓'); return; }
+    }
     state[key].push(name); el.classList.add('selected'); ripple(e,el);
     el.classList.remove('pop'); requestAnimationFrame(()=>requestAnimationFrame(()=>el.classList.add('pop')));
     pulseBar();
-    if(state[key].length===MAX) showToast('Solo son 3 — ya completaste esta pregunta ✓');
   } else {
     state[key].splice(idx,1); el.classList.remove('selected');
   }
-  document.getElementById(cntId).textContent=state[key].length;
-  const atMax=state[key].length>=MAX;
+  if(cntId) document.getElementById(cntId).textContent=state[key].length;
+  const atMax=state[key].length>=lim;
   document.querySelectorAll(`#${gridId} .cand-card`).forEach(c=>{
     if(atMax&&!state[key].includes(c.dataset.name)) c.classList.add('maxed');
     else c.classList.remove('maxed');
