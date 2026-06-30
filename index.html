@@ -425,9 +425,10 @@ function pinnedShuffle(arr, pin){
 }
 function equalizeCards(gridId){
   requestAnimationFrame(()=>{
-    const cards=document.querySelectorAll(`#${gridId} .cand-card`);
-    if(!cards.length) return;
-    cards.forEach(c=>c.style.height='auto');
+    const all=document.querySelectorAll(`#${gridId} .cand-card`);
+    if(!all.length) return;
+    all.forEach(c=>c.style.height='auto');
+    const cards=[...all].filter(c=>!c.classList.contains('cand-card--text'));
     let max=0; cards.forEach(c=>{if(c.offsetHeight>max)max=c.offsetHeight;});
     cards.forEach(c=>c.style.height=max+'px');
   });
