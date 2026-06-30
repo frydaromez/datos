@@ -83,8 +83,9 @@
       font-weight: 900; line-height: 1.03; letter-spacing: -2.5px;
       color: rgba(255,255,255,.35); /* ¿ y ? en blanco apagado */
     }
-    .welcome-title .t-accent { color: var(--green); }     /* gobernar León */
-    .welcome-title .t-white  { color: var(--white); }     /* Quién debe */
+    .welcome-title .t-accent { color: var(--green); }
+    .welcome-title .t-white  { color: var(--white); }
+    .welcome-title .t-qmark  { color: var(--white); }
 
     .hero-right { display: flex; flex-direction: column; gap: 14px; }
 
@@ -184,7 +185,7 @@
       padding-right: 22px;
     }
     .cand-card.selected .c-name { color: var(--green); }
-    .cand-card.tono .c-name { font-size: 15.5px; } /* sutilmente más grande */
+    .cand-card.tono .c-name { font-size: 14.2px; } /* sutilmente más grande */
 
     .c-bar {
       width: 24px; height: 3px; background: var(--border);
@@ -394,12 +395,12 @@ function renderWelcome(){
     <div class="screen">
       <div class="hero">
         <div>
-          <h1 class="welcome-title">¿<span class="t-white">Quién debe</span><br><span class="t-accent">gobernar<br>León</span>?</h1>
+          <h1 class="welcome-title"><span class="t-qmark">¿</span><span class="t-white">Quién debe</span><br><span class="t-accent">gobernar<br>León</span><span class="t-qmark">?</span></h1>
         </div>
         <div class="hero-right">
           <p class="hero-desc">
             Queremos conocer tu opinión sobre los candidatos para la
-            <strong>Presidencia Municipal de León.</strong>
+            Presidencia Municipal de León.
           </p>
           <div class="hero-chips">
             <div class="hero-chip">
