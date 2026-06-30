@@ -616,11 +616,9 @@ function renderQ4(){
             <div class="c-name">${c}</div>
           </div>`).join('')}
         ${extras.map(c=>`
-          <div class="cand-card ${state.q4===c?'selected':''}" data-name="${c}" onclick="selectVote(event,this)">
+          <div class="cand-card cand-card--text ${state.q4===c?'selected':''}" data-name="${c}" onclick="selectVote(event,this)">
             <div class="c-check">✓</div>
-            ${(ph=>(ph?`<img class="c-photo" src="${ph}" alt="${c}" loading="lazy">`:`<div class="c-photo-placeholder">${c.split(' ').map(w=>w[0]).slice(0,2).join('')}</div>`))(CANDIDATE_PHOTOS[c])}
-            <div class="c-bar"></div>
-            <div class="c-name" style="color:var(--gray)">${c}</div>
+            <div class="c-name" style="color:var(--gray);text-align:center;padding:0 8px;">${c}</div>
           </div>`).join('')}
       </div>
       <div class="btn-row">
