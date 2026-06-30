@@ -43,6 +43,30 @@
       overflow-x: hidden; -webkit-overflow-scrolling: touch; overscroll-behavior-y: none;
     }
 
+    /* ── STICKY HEADER ── */
+    .sticky-header {
+      position: sticky; top: 0; z-index: 100;
+      background: rgba(10,10,10,.96);
+      backdrop-filter: blur(14px); -webkit-backdrop-filter: blur(14px);
+      padding: calc(env(safe-area-inset-top,0px) + 10px) 20px 12px;
+      margin: 0 -20px; width: calc(100% + 40px);
+      border-bottom: 1px solid #1a1a1a;
+    }
+    .sticky-header .topbar { padding: 0 0 12px; }
+    .sticky-header .progress-wrap { margin-bottom: 0; }
+
+    /* ── STICKY Q-HEADER ── */
+    .q-sticky {
+      position: sticky; top: var(--sticky-top, 90px); z-index: 90;
+      background: rgba(10,10,10,.96);
+      backdrop-filter: blur(12px); -webkit-backdrop-filter: blur(12px);
+      padding: 10px 0 8px;
+      margin: 0 0 4px;
+      border-bottom: 1px solid #1a1a1a;
+    }
+    .q-sticky .q-title  { margin-bottom: 4px; }
+    .q-sticky .q-sub    { margin-bottom: 0; }
+
     /* ── TOPBAR ── */
     .topbar {
       width: 100%; max-width: 680px;
@@ -343,6 +367,7 @@
   </div>
   <div class="progress-bar-bg"><div class="progress-bar-fill" id="progressFill" style="width:0%"></div></div>
 </div>
+  </div><!-- /sticky-header -->
 
 <div id="app"></div>
 <div class="toast" id="toast"></div>
@@ -434,11 +459,16 @@ function showAlertToast(msg){
 const app=document.getElementById('app');
 const SCREENS=[renderWelcome,renderQ1,renderQ2,renderQ3,renderQ4,renderThanks];
 
+function setStickyTop(){
+  const sh=document.querySelector('.sticky-header');
+  if(sh) document.documentElement.style.setProperty('--sticky-top', sh.offsetHeight+'px');
+}
 function goTo(n){
   const cur=app.querySelector('.screen');
-  if(cur){cur.classList.add('out');setTimeout(()=>{app.innerHTML='';SCREENS[n]();window.scrollTo({top:0,behavior:'smooth'});},180);}
-  else SCREENS[n]();
+  if(cur){cur.classList.add('out');setTimeout(()=>{app.innerHTML='';SCREENS[n]();window.scrollTo({top:0,behavior:'smooth'});requestAnimationFrame(setStickyTop);},180);}
+  else { SCREENS[n](); requestAnimationFrame(setStickyTop); }
 }
+window.addEventListener('resize', setStickyTop);
 
 function updateProgress(step){
   const pw=document.getElementById('progressWrap');
@@ -493,8 +523,11 @@ function renderQ1(){
   app.innerHTML=`
     <div class="screen">
 
-      <p class="q-title">De los siguientes personajes públicos en León <strong>¿a quiénes conoce o ha escuchado nombrar?</strong></p>
+      <div class="q-sticky"><p class="q-title">De los siguientes personajes públicos en León <strong>¿a quiénes conoce o ha escuchado nombrar?</strong></p>
       <p class="q-sub"><span class="sel-count" id="cnt1">${state.q1.length}</span> de 3</p>
+
+
+      </div>
       <div class="cand-grid" id="grid1">
         ${state.o1.map(c=>`
           <div class="cand-card ${state.q1.includes(c)?'selected':''} ${c==='Toño Guzmán'?'tono':''}" data-name="${c}"
@@ -519,8 +552,10 @@ function renderQ2(){
   const atMax=state.q2.length>=MAX;
   app.innerHTML=`
     <div class="screen">
-      <p class="q-title">Independientemente de su preferencia política ¿por cuál de estas personas <strong>USTED NUNCA VOTARÍA</strong> para la Presidencia Municipal de León?</p>
+      <div class="q-sticky"><p class="q-title">Independientemente de su preferencia política ¿por cuál de estas personas <strong>USTED NUNCA VOTARÍA</strong> para la Presidencia Municipal de León?</p>
       <p class="q-sub"><span class="sel-count" id="cnt2">${state.q2.length}</span> de 3</p>
+
+      </div>
       <div class="cand-grid" id="grid2">
         ${state.o2.map(c=>`
           <div class="cand-card ${state.q2.includes(c)?'selected':''} ${c==='Toño Guzmán'?'tono':''} ${atMax&&!state.q2.includes(c)?'maxed':''}"
@@ -545,8 +580,10 @@ function renderQ3(){
   const isOtro=state.q3==='Otro';
   app.innerHTML=`
     <div class="screen">
-      <p class="q-title">¿En cuál de los siguientes partidos <strong>confía más</strong> para gobernar León?</p>
+      <div class="q-sticky"><p class="q-title">¿En cuál de los siguientes partidos <strong>confía más</strong> para gobernar León?</p>
       <p class="q-sub">Seleccione una opción</p>
+
+      </div>
       <div class="party-list" id="grpQ3">
         ${PARTIES.map(p=>`
           <div class="party-card ${state.q3===p.abbr?'selected':''}" data-val="${p.abbr}"
@@ -580,8 +617,10 @@ function renderQ4(){
   const extras=["Ninguno / Anularía mi voto","Aún no lo he decidido"];
   app.innerHTML=`
     <div class="screen">
-      <p class="q-title">Si <strong>hoy fueran las elecciones</strong> para Presidente Municipal de León <strong>¿por quién votaría?</strong></p>
+      <div class="q-sticky"><p class="q-title">Si <strong>hoy fueran las elecciones</strong> para Presidente Municipal de León <strong>¿por quién votaría?</strong></p>
       <p class="q-sub">Seleccione una opción</p>
+
+      </div>
       <div class="cand-grid" id="voteGrid">
         ${state.o4.map(c=>`
           <div class="cand-card ${state.q4===c?'selected':''} ${c==='Toño Guzmán'?'tono':''}" data-name="${c}" onclick="selectVote(event,this)">
