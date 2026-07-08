@@ -747,11 +747,16 @@ async function isIncognito(){
 function showIncognitoBlock(){
   const pw=document.getElementById('progressWrap');
   if(pw) pw.style.display='none';
+  const url = window.location.href;
   app.innerHTML=`
     <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:2rem;gap:1.5rem;">
       <div style="font-size:3rem;">🕵️</div>
       <h2 style="color:var(--green);margin:0;">Modo incógnito detectado</h2>
-      <p style="color:var(--text-secondary);margin:0;max-width:320px;line-height:1.6;">Para participar en la encuesta, ábrela en tu navegador normal, sin modo incógnito o privado.<br><br>¡Gracias por tu comprensión!</p>
+      <p style="color:var(--text-secondary);margin:0;max-width:320px;line-height:1.6;">Para participar, abre la encuesta en tu navegador normal, sin modo incógnito o privado.</p>
+      <a href="${url}" target="_blank" rel="noopener"
+        style="display:inline-block;margin-top:8px;padding:14px 28px;background:var(--green);color:#000;font-weight:800;font-size:14px;border-radius:12px;text-decoration:none;letter-spacing:.3px;">
+        Abrir en navegador normal →
+      </a>
     </div>`;
 }
 
