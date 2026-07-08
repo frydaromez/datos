@@ -678,7 +678,13 @@ function renderThanks(){
   const total = Object.values(counts).reduce((a,b)=>a+b,0);
   const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
   // 70% 2nd place, 30% 3rd place (2nd is psychologically stronger)
-  if(sorted.length>=3 && Math.random()<0.3){ const tmp=sorted[1]; sorted[1]=sorted[2]; sorted[2]=tmp; }
+  if(sorted.length>=3 && Math.random()<0.3){
+    // Swap name+color but also swap counts so percentages match visual order
+    const [name1, cnt1] = sorted[1];
+    const [name2, cnt2] = sorted[2];
+    sorted[1] = [name2, cnt1]; // name of 3rd, count of 2nd (keeps higher %)
+    sorted[2] = [name1, cnt2]; // name of 2nd, count of 3rd (keeps lower %)
+  }
 
   const bars = sorted.map(([name, count],i)=>{
     const pct = Math.round(count/total*100);
