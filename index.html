@@ -463,7 +463,19 @@ function updateQHeader(html){
 const SCREENS=[renderWelcome,renderQ1,renderQ2,renderQ3,renderQ4,renderThanks];
 
 
+function showAlreadySubmitted(){
+  app.innerHTML=`
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:2rem;gap:1.5rem;">
+      <div style="font-size:3rem;">✅</div>
+      <h2 style="color:var(--green);margin:0;">¡Ya participaste!</h2>
+      <p style="color:var(--text-secondary);margin:0;max-width:320px;line-height:1.6;">Tu respuesta ya fue registrada.<br><br>¡Gracias por tu opinión!</p>
+    </div>`;
+}
+
 function goTo(n){
+  if(localStorage.getItem('survey_submitted') && n < 5){
+    showAlreadySubmitted(); return;
+  }
   const cur=app.querySelector('.screen');
   if(cur){cur.classList.add('out');setTimeout(()=>{app.innerHTML='';SCREENS[n]();window.scrollTo({top:0,behavior:'smooth'});},180);}
   else { SCREENS[n]();  }
@@ -865,12 +877,7 @@ function resetSurvey(){
 }
 
 if(localStorage.getItem('survey_submitted')){
-  app.innerHTML=`
-    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:2rem;gap:1.5rem;">
-      <div style="font-size:3rem;">✅</div>
-      <h2 style="color:var(--green);margin:0;">¡Ya participaste!</h2>
-      <p style="color:var(--text-secondary);margin:0;max-width:320px;line-height:1.6;">Tu respuesta ya fue registrada.<br><br>¡Gracias por tu opinión!</p>
-    </div>`;
+  showAlreadySubmitted();
 } else {
   renderWelcome();
 }
