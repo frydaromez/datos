@@ -720,21 +720,15 @@ async function getFingerprint(){
 }
 
 async function isIncognito(){
-  // Método 1: Chrome incógnito — cuota de almacenamiento reducida (~120MB)
+  // Chrome/Edge incógnito: cuota de almacenamiento reducida (~120MB)
   try{
     const est = await navigator.storage.estimate();
     if(est.quota < 200*1024*1024) return true;
   }catch(e){}
 
-  // Método 2: Edge InPrivate y Firefox privado — no permite persistencia de storage
+  // Safari privado: indexedDB bloqueado
   try{
-    const canPersist = await navigator.storage.persist();
-    if(!canPersist) return true;
-  }catch(e){}
-
-  // Método 3: Safari privado — indexedDB bloqueado
-  try{
-    await new Promise((resolve, reject)=>{
+    await new Promise((resolve)=>{
       const req = indexedDB.open('__priv__');
       req.onerror = ()=> resolve(true);
       req.onsuccess = e=>{ e.target.result.close(); indexedDB.deleteDatabase('__priv__'); resolve(false); };
