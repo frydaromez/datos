@@ -669,11 +669,8 @@ function recordVote(candidate){
 
 function renderThanks(){
   updateQHeader(null);
-  updateProgress(3,3);
-  setTimeout(()=>{
-    const f=document.getElementById('progressFill');
-    if(f){ f.style.width='100%'; f.classList.add('pulse'); setTimeout(()=>f.classList.remove('pulse'),500); }
-  },50);
+  const pw=document.getElementById('progressWrap');
+  if(pw) pw.style.display='none';
 
   if(state.q4) recordVote(state.q4);
 
