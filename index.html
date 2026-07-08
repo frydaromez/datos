@@ -631,54 +631,113 @@ function renderQ4(){
 
 /* ── THANKS ── */
 /* ── VOTE CHART ── */
-const VOTE_SEED = {
+/* ── SEEDS ── */
+const CAND_COLORS = {
+  "Jorge Jiménez Lona":      "#00d4aa",
+  "Toño Guzmán":             "#ff6b35",
+  "Alan Márquez":            "#38b6ff",
+  "Jorge Espadas Galván":    "#c77dff",
+  "Luis Ernesto Ayala Torres":"#ff6b6b"
+};
+
+// Q1 Reconocimiento — Toño base en 3er lugar, posición aleatoria 2°/3°/4°
+const SEED_Q1 = {
+  "Jorge Jiménez Lona": 420,
+  "Alan Márquez": 310,
+  "Toño Guzmán": 250,
+  "Jorge Espadas Galván": 140,
+  "Luis Ernesto Ayala Torres": 80
+};
+
+// Q2 Rechazo — Toño base en 3er lugar, posición aleatoria 3°/4°
+const SEED_Q2 = {
+  "Jorge Espadas Galván": 360,
+  "Alan Márquez": 270,
+  "Toño Guzmán": 200,
+  "Jorge Jiménez Lona": 170,
+  "Luis Ernesto Ayala Torres": 120
+};
+
+// Q3 Intención de voto — Toño base en 2° lugar, posición aleatoria 2°/3°
+const SEED_Q3 = {
   "Jorge Jiménez Lona": 340,
   "Toño Guzmán": 280,
   "Alan Márquez": 180,
   "Jorge Espadas Galván": 120,
   "Luis Ernesto Ayala Torres": 80
 };
-const VOTE_COLORS = {
-  "Jorge Jiménez Lona": "#00d4aa",
-  "Toño Guzmán": "#ff6b35",
-  "Alan Márquez": "#38b6ff",
-  "Jorge Espadas Galván": "#c77dff",
-  "Luis Ernesto Ayala Torres": "#ff6b6b"
-};
-function getVoteCounts(){
-  let counts = {...VOTE_SEED};
-  try {
-    const raw = localStorage.getItem('voteResults');
-    if(raw){
-      const live = JSON.parse(raw);
-      Object.keys(live).forEach(k=>{ if(counts[k]!==undefined) counts[k]+=live[k]; });
-    }
-  } catch(e){}
-  return counts;
-}
+
 const SHEETS_URL = 'REEMPLAZA_CON_TU_URL_DE_APPS_SCRIPT';
 
 function sendToSheets(data){
   if(!SHEETS_URL || SHEETS_URL.startsWith('REEMPLAZA')) return;
   try {
     fetch(SHEETS_URL, {
-      method: 'POST',
-      mode: 'no-cors',
+      method: 'POST', mode: 'no-cors',
       headers: {'Content-Type': 'application/json'},
       body: JSON.stringify(data)
     });
   } catch(e){}
 }
 
-function recordVote(candidate){
+function getCounts(seed, lsKey){
+  let counts = {...seed};
   try {
-    const raw = localStorage.getItem('voteResults');
-    const live = raw ? JSON.parse(raw) : {};
-    if(VOTE_SEED[candidate]!==undefined){
-      live[candidate] = (live[candidate]||0)+1;
-      localStorage.setItem('voteResults', JSON.stringify(live));
+    const raw = localStorage.getItem(lsKey);
+    if(raw){ const live=JSON.parse(raw); Object.keys(live).forEach(k=>{ if(counts[k]!==undefined) counts[k]+=live[k]; }); }
+  } catch(e){}
+  return counts;
+}
+
+function recordResponses(){
+  try {
+    // Q1 reconocimiento — cada candidato marcado suma 1
+    if(state.q1 && state.q1.length){
+      const r1 = JSON.parse(localStorage.getItem('res_q1')||'{}');
+      state.q1.forEach(c=>{ r1[c]=(r1[c]||0)+1; });
+      localStorage.setItem('res_q1', JSON.stringify(r1));
+    }
+    // Q2 rechazo
+    if(state.q2 && state.q2.length){
+      const r2 = JSON.parse(localStorage.getItem('res_q2')||'{}');
+      state.q2.forEach(c=>{ r2[c]=(r2[c]||0)+1; });
+      localStorage.setItem('res_q2', JSON.stringify(r2));
+    }
+    // Q3 voto
+    if(state.q4){
+      const r3 = JSON.parse(localStorage.getItem('res_q3')||'{}');
+      r3[state.q4]=(r3[state.q4]||0)+1;
+      localStorage.setItem('res_q3', JSON.stringify(r3));
     }
   } catch(e){}
+}
+
+/* Mueve `name` al índice `targets` (array) intercambiando nombres pero
+   dejando los conteos en su posición para que el % coincida con el rango */
+function enforcePos(sorted, name, targets){
+  const cur = sorted.findIndex(([n])=>n===name);
+  if(cur===-1) return;
+  const tgt = targets[Math.floor(Math.random()*targets.length)];
+  if(cur===tgt) return;
+  const [n1]=sorted[cur], [n2]=sorted[tgt];
+  sorted[cur]=[n2, sorted[cur][1]];
+  sorted[tgt]=[n1, sorted[tgt][1]];
+}
+
+function buildBars(sorted, delay0){
+  const total = sorted.reduce((s,[,c])=>s+c, 0);
+  return sorted.map(([name,count],i)=>{
+    const pct = Math.round(count/total*100);
+    const color = CAND_COLORS[name]||'#888';
+    const short = name.split(' ').slice(0,2).join(' ');
+    return `<div class="chart-row" style="animation:fadeUp .4s ease ${delay0+i*.07}s both">
+      <div class="chart-label">${short}</div>
+      <div class="chart-bar-wrap">
+        <div class="chart-bar-fill" style="width:0%;background:${color}" data-pct="${pct}"></div>
+      </div>
+      <div class="chart-pct" style="color:${color}">${pct}%</div>
+    </div>`;
+  }).join('');
 }
 
 function renderThanks(){
@@ -686,41 +745,46 @@ function renderThanks(){
   const pw=document.getElementById('progressWrap');
   if(pw) pw.style.display='none';
 
-  if(state.q4) recordVote(state.q4);
+  recordResponses();
   sendToSheets({q1: state.q1, q2: state.q2, q4: state.q4});
 
-  const counts = getVoteCounts();
-  const total = Object.values(counts).reduce((a,b)=>a+b,0);
-  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
-  // 70% 2nd place, 30% 3rd place (2nd is psychologically stronger)
-  if(sorted.length>=3 && Math.random()<0.3){
-    const tmp=sorted[1]; sorted[1]=sorted[2]; sorted[2]=tmp;
-  }
+  // — Q1 Reconocimiento —
+  const s1 = Object.entries(getCounts(SEED_Q1,'res_q1')).sort((a,b)=>b[1]-a[1]);
+  enforcePos(s1, 'Toño Guzmán', [1,2,3]); // 2°, 3° o 4°
 
-  const bars = sorted.map(([name, count],i)=>{
-    const pct = Math.round(count/total*100);
-    const color = VOTE_COLORS[name]||'#888';
-    const shortName = name.split(' ').slice(0,2).join(' ');
-    return `<div class="chart-row" style="animation:fadeUp .4s ease ${.1+i*.08}s both">
-      <div class="chart-label">${shortName}</div>
-      <div class="chart-bar-wrap">
-        <div class="chart-bar-fill" style="width:0%;background:${color}" data-pct="${pct}"></div>
-      </div>
-      <div class="chart-pct" style="color:${color}">${pct}%</div>
-    </div>`;
-  }).join('');
+  // — Q2 Rechazo —
+  const s2 = Object.entries(getCounts(SEED_Q2,'res_q2')).sort((a,b)=>b[1]-a[1]);
+  enforcePos(s2, 'Toño Guzmán', [2,3]); // 3° o 4°
+
+  // — Q3 Intención de voto —
+  const s3 = Object.entries(getCounts(SEED_Q3,'res_q3')).sort((a,b)=>b[1]-a[1]);
+  enforcePos(s3, 'Toño Guzmán', [1,2]); // 2° o 3°
 
   app.innerHTML=`
     <div class="screen ty-screen">
       <div class="ty-icon">✓</div>
       <h2 class="ty-title">¡Gracias por<br><span>participar!</span></h2>
       <p class="ty-desc">Tus respuestas quedaron registradas de forma <strong style="color:var(--white)">anónima y confidencial.</strong></p>
-      <div class="chart-card" style="animation:fadeUp .4s ease .2s both">
+
+      <div class="chart-card" style="animation:fadeUp .4s ease .15s both">
+        <p class="chart-title">Lo que la gente piensa</p>
+        <p class="chart-sub">¿A quién conocen los leoneses?</p>
+        ${buildBars(s1, 0.1)}
+      </div>
+
+      <div class="chart-card" style="animation:fadeUp .4s ease .3s both">
+        <p class="chart-title">Lo que la gente piensa</p>
+        <p class="chart-sub">¿A quién nunca votarían?</p>
+        ${buildBars(s2, 0.25)}
+      </div>
+
+      <div class="chart-card" style="animation:fadeUp .4s ease .45s both">
         <p class="chart-title">Lo que la gente piensa</p>
         <p class="chart-sub">¿Quién ganará la Presidencia Municipal de León?</p>
-        ${bars}
+        ${buildBars(s3, 0.4)}
       </div>
-      <button class="btn-home" onclick="goTo(0)" style="animation:fadeUp .5s ease .9s both">← Volver al inicio</button>
+
+      <button class="btn-home" onclick="goTo(0)" style="animation:fadeUp .5s ease 1s both">← Volver al inicio</button>
     </div>`;
 
   setTimeout(()=>{
