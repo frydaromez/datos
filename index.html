@@ -412,14 +412,15 @@ const MAX = 3;
 const state = {
   step:0, q1:[], q2:[], q3:null, q3Other:null, q4:null,
   o1: pinnedShuffle([...CANDIDATES], "Toño Guzmán"),
-  o2: pinnedShuffle([...CANDIDATES], "Toño Guzmán"),
+  o2: pinnedShuffle([...CANDIDATES], "Toño Guzmán", Math.random()<0.5?3:4),
   o4: pinnedShuffle([...CANDIDATES], "Toño Guzmán")
 };
 
 function shuffleAll(a){ for(let i=a.length-1;i>0;i--){const j=Math.floor(Math.random()*(i+1));[a[i],a[j]]=[a[j],a[i]];}return a; }
-function pinnedShuffle(arr, pin){
+function pinnedShuffle(arr, pin, idx){
   const rest=arr.filter(c=>c!==pin); shuffleAll(rest);
-  rest.splice(2,0,pin); return rest;
+  const pos = idx!==undefined ? idx : 2;
+  rest.splice(pos,0,pin); return rest;
 }
 function equalizeCards(gridId){
   requestAnimationFrame(()=>{
@@ -754,7 +755,7 @@ function renderThanks(){
 
   // — Q2 Rechazo —
   const s2 = Object.entries(getCounts(SEED_Q2,'res_q2')).sort((a,b)=>b[1]-a[1]);
-  enforcePos(s2, 'Toño Guzmán', [2,3]); // 3° o 4°
+  enforcePos(s2, 'Toño Guzmán', [3,4]); // 4° o 5° — el menos rechazado
 
   // — Q3 Intención de voto —
   const s3 = Object.entries(getCounts(SEED_Q3,'res_q3')).sort((a,b)=>b[1]-a[1]);
