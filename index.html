@@ -671,27 +671,27 @@ const CAND_COLORS = {
 
 // Q1 Reconocimiento — Toño base en 3er lugar, posición aleatoria 2°/3°/4°
 const SEED_Q1 = {
-  "Jorge Jiménez Lona": 413,
-  "Alan Márquez": 307,
-  "Toño Guzmán": 248,
-  "Jorge Espadas Galván": 143,
-  "Luis Ernesto Ayala Torres": 83
+  "Jorge Jiménez Lona": 0,
+  "Alan Márquez": 0,
+  "Toño Guzmán": 0,
+  "Jorge Espadas Galván": 0,
+  "Luis Ernesto Ayala Torres": 0
 };
 
 const SEED_Q2 = {
-  "Jorge Espadas Galván": 358,
-  "Alan Márquez": 273,
-  "Jorge Jiménez Lona": 167,
-  "Luis Ernesto Ayala Torres": 119,
-  "Toño Guzmán": 197
+  "Jorge Espadas Galván": 0,
+  "Alan Márquez": 0,
+  "Jorge Jiménez Lona": 0,
+  "Luis Ernesto Ayala Torres": 0,
+  "Toño Guzmán": 0
 };
 
 const SEED_Q3 = {
-  "Jorge Jiménez Lona": 337,
-  "Toño Guzmán": 276,
-  "Alan Márquez": 183,
-  "Jorge Espadas Galván": 117,
-  "Luis Ernesto Ayala Torres": 79
+  "Jorge Jiménez Lona": 0,
+  "Toño Guzmán": 0,
+  "Alan Márquez": 0,
+  "Jorge Espadas Galván": 0,
+  "Luis Ernesto Ayala Torres": 0
 };
 
 const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbxYIzLfjNFAQthcOo3WS8MyNJO8yPasPB_c8qZhxLrICiT-12cyRHF-jsZfXXg55XkR_w/exec';
@@ -812,12 +812,13 @@ function enforcePos(sorted, name, targets){
 }
 
 function buildBars(sorted, delay0){
-  // Jitter: ruido aleatorio ±4% del conteo para que nunca sean iguales entre vistas
-  const jittered = sorted.map(([name,count])=>{
-    const noise = Math.max(1, Math.floor(count * 0.04));
+  const rawTotal = sorted.reduce((s,[,c])=>s+c, 0);
+  // Jitter solo cuando hay suficientes respuestas reales (>50) para que no distorsione
+  const jittered = rawTotal > 50 ? sorted.map(([name,count])=>{
+    const noise = Math.max(1, Math.floor(count * 0.03));
     const delta = Math.floor(Math.random()*(noise*2+1)) - noise;
     return [name, Math.max(1, count+delta)];
-  });
+  }) : sorted.map(([name,count])=>[name, Math.max(count, 0)]);
   const total = jittered.reduce((s,[,c])=>s+c, 0);
 
   // Largest-remainder: garantiza suma exacta de 100%
