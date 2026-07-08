@@ -970,6 +970,12 @@ function resetSurvey(){
 }
 
 (async function init(){
+  // ?reset=1 limpia todo para pruebas
+  if(new URLSearchParams(location.search).get('reset')==='1'){
+    ['survey_submitted','res_q1','res_q2','res_q3'].forEach(k=>localStorage.removeItem(k));
+    history.replaceState(null,'',location.pathname);
+  }
+
   if(localStorage.getItem('survey_submitted')){ showAlreadySubmitted(); return; }
 
   const incognito = await isIncognito();
