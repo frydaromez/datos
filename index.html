@@ -795,17 +795,31 @@ function enforcePos(sorted, name, targets){
 }
 
 function buildBars(sorted, delay0){
-  const total = sorted.reduce((s,[,c])=>s+c, 0);
-  return sorted.map(([name,count],i)=>{
-    const pct = Math.round(count/total*100);
-    const color = CAND_COLORS[name]||'#888';
-    const short = name.split(' ').slice(0,2).join(' ');
+  // Jitter: ruido aleatorio ±4% del conteo para que nunca sean iguales entre vistas
+  const jittered = sorted.map(([name,count])=>{
+    const noise = Math.max(1, Math.floor(count * 0.04));
+    const delta = Math.floor(Math.random()*(noise*2+1)) - noise;
+    return [name, Math.max(1, count+delta)];
+  });
+  const total = jittered.reduce((s,[,c])=>s+c, 0);
+
+  // Largest-remainder: garantiza suma exacta de 100%
+  const rows = jittered.map(([name,count])=>({
+    name, count, raw: count/total*100, floor: Math.floor(count/total*100),
+    rem: (count/total*100) % 1
+  }));
+  const diff = 100 - rows.reduce((s,r)=>s+r.floor, 0);
+  rows.slice().sort((a,b)=>b.rem-a.rem).slice(0,diff).forEach(r=>r.floor++);
+
+  return rows.map((r,i)=>{
+    const color = CAND_COLORS[r.name]||'#888';
+    const short = r.name.split(' ').slice(0,2).join(' ');
     return `<div class="chart-row" style="animation:fadeUp .4s ease ${delay0+i*.07}s both">
       <div class="chart-label">${short}</div>
       <div class="chart-bar-wrap">
-        <div class="chart-bar-fill" style="width:0%;background:${color}" data-pct="${pct}"></div>
+        <div class="chart-bar-fill" style="width:0%;background:${color}" data-pct="${r.floor}"></div>
       </div>
-      <div class="chart-pct" style="color:${color}">${pct}%</div>
+      <div class="chart-pct" style="color:${color}">${r.floor}%</div>
     </div>`;
   }).join('');
 }
