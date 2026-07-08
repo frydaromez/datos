@@ -698,17 +698,58 @@ const SEED_Q3 = {
 
 const SHEETS_URL = 'https://script.google.com/macros/s/AKfycbx9IM3DmnLqwhMDhTkZWg-6No18FQ_xc1T4zMwamV7mWjrAUKZNhFtRpveJvDIUgXw58Q/exec';
 
+async function getFingerprint(){
+  const parts=[
+    navigator.language,
+    (navigator.languages||[]).join(','),
+    screen.width+'x'+screen.height,
+    screen.colorDepth,
+    new Intl.DateTimeFormat().resolvedOptions().timeZone,
+    navigator.hardwareConcurrency||'',
+    navigator.platform||'',
+    (navigator.userAgent||'').slice(0,80)
+  ];
+  try{
+    const cv=document.createElement('canvas');
+    const ctx=cv.getContext('2d');
+    ctx.textBaseline='top'; ctx.font='14px Arial';
+    ctx.fillStyle='#f00'; ctx.fillText('León2026🗳️',2,2);
+    parts.push(cv.toDataURL().slice(-40));
+  }catch(e){}
+  const raw=parts.join('|');
+  const buf=await crypto.subtle.digest('SHA-256',new TextEncoder().encode(raw));
+  return Array.from(new Uint8Array(buf)).map(b=>b.toString(16).padStart(2,'0')).join('').slice(0,32);
+}
+
+async function isIncognito(){
+  try{
+    const est=await navigator.storage.estimate();
+    return est.quota < 200*1024*1024;
+  }catch(e){ return false; }
+}
+
+function showIncognitoBlock(){
+  const pw=document.getElementById('progressWrap');
+  if(pw) pw.style.display='none';
+  app.innerHTML=`
+    <div style="display:flex;flex-direction:column;align-items:center;justify-content:center;min-height:60vh;text-align:center;padding:2rem;gap:1.5rem;">
+      <div style="font-size:3rem;">🕵️</div>
+      <h2 style="color:var(--green);margin:0;">Modo incógnito detectado</h2>
+      <p style="color:var(--text-secondary);margin:0;max-width:320px;line-height:1.6;">Para participar en la encuesta, ábrela en tu navegador normal, sin modo incógnito o privado.<br><br>¡Gracias por tu comprensión!</p>
+    </div>`;
+}
+
 function sendToSheets(data){
   if(!SHEETS_URL || SHEETS_URL.startsWith('REEMPLAZA')) return;
   if(localStorage.getItem('survey_submitted')) return;
-  try {
-    fetch(SHEETS_URL, {
-      method: 'POST', mode: 'no-cors',
-      headers: {'Content-Type': 'application/json'},
-      body: JSON.stringify(data)
+  try{
+    fetch(SHEETS_URL,{
+      method:'POST', mode:'no-cors',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({...data, fp: window._surveyFp||''})
     });
-    localStorage.setItem('survey_submitted', '1');
-  } catch(e){}
+    localStorage.setItem('survey_submitted','1');
+  }catch(e){}
 }
 
 function getCounts(seed, lsKey){
@@ -893,11 +934,23 @@ function resetSurvey(){
   goTo(0);
 }
 
-if(localStorage.getItem('survey_submitted')){
-  showAlreadySubmitted();
-} else {
+(async function init(){
+  if(localStorage.getItem('survey_submitted')){ showAlreadySubmitted(); return; }
+
+  const incognito = await isIncognito();
+  if(incognito){ showIncognitoBlock(); return; }
+
+  const fp = await getFingerprint();
+  window._surveyFp = fp;
+
+  try{
+    const r = await fetch(SHEETS_URL+'?fp='+encodeURIComponent(fp), {signal:AbortSignal.timeout(4000)});
+    const j = await r.json();
+    if(j.exists){ localStorage.setItem('survey_submitted','1'); showAlreadySubmitted(); return; }
+  }catch(e){}
+
   renderWelcome();
-}
+})();
 </script>
 </body>
 </html>
