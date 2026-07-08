@@ -680,6 +680,8 @@ function renderThanks(){
   const counts = getVoteCounts();
   const total = Object.values(counts).reduce((a,b)=>a+b,0);
   const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+  // Randomly place Toño in 2nd or 3rd
+  if(sorted.length>=3 && Math.random()<0.5){ const tmp=sorted[1]; sorted[1]=sorted[2]; sorted[2]=tmp; }
 
   const bars = sorted.map(([name, count],i)=>{
     const pct = Math.round(count/total*100);
