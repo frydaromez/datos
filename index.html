@@ -223,7 +223,7 @@
       padding: 8px 12px 0; text-align: center; width: 100%;
     }
     .cand-card.selected .c-name { color: var(--green); }
-    .cand-card.tono .c-name { font-size: 14.5px; font-weight: 800; }
+    .cand-card.tono .c-name { font-size: 12px; font-weight: 700; }
 
     .c-bar {
       width: 24px; height: 3px; background: var(--border);
@@ -307,6 +307,16 @@
     .ty-title span { color: var(--green); }
     .ty-desc { font-size: 14px; color: var(--gray-lt); line-height: 1.75; max-width: 360px; margin: 0 auto 36px; animation: fadeUp .5s ease .45s both; }
     @keyframes fadeUp { from{opacity:0;transform:translateY(12px)} to{opacity:1;transform:translateY(0)} }
+
+    /* ── VOTE CHART ── */
+    .chart-card { background: #111; border: 1.5px solid #222; border-radius: 20px; padding: 24px 20px 20px; text-align: left; margin-bottom: 24px; }
+    .chart-title { font-size: 16px; font-weight: 800; color: var(--white); margin: 0 0 4px; }
+    .chart-sub { font-size: 12px; color: var(--gray-lt); margin: 0 0 20px; }
+    .chart-row { display: flex; align-items: center; gap: 10px; margin-bottom: 14px; }
+    .chart-label { font-size: 13px; font-weight: 700; color: var(--white); min-width: 90px; max-width: 90px; line-height: 1.3; }
+    .chart-bar-wrap { flex: 1; background: #1e1e1e; border-radius: 8px; height: 28px; overflow: hidden; }
+    .chart-bar-fill { height: 100%; border-radius: 8px; width: 0%; }
+    .chart-pct { font-size: 14px; font-weight: 800; min-width: 38px; text-align: right; }
 
     /* ── RIPPLE ── */
     .ripple { position: absolute; border-radius: 50%; background: rgba(61,255,110,.15); transform: scale(0); animation: rippleAnim .55s cubic-bezier(0,0,.2,1); pointer-events: none; }
@@ -620,6 +630,43 @@ function renderQ4(){
 }
 
 /* ── THANKS ── */
+/* ── VOTE CHART ── */
+const VOTE_SEED = {
+  "Jorge Jiménez Lona": 340,
+  "Toño Guzmán": 280,
+  "Alan Márquez": 180,
+  "Jorge Espadas Galván": 120,
+  "Luis Ernesto Ayala Torres": 80
+};
+const VOTE_COLORS = {
+  "Jorge Jiménez Lona": "#3dff6e",
+  "Toño Guzmán": "#ff6b35",
+  "Alan Márquez": "#38b6ff",
+  "Jorge Espadas Galván": "#c77dff",
+  "Luis Ernesto Ayala Torres": "#ffd166"
+};
+function getVoteCounts(){
+  let counts = {...VOTE_SEED};
+  try {
+    const raw = localStorage.getItem('voteResults');
+    if(raw){
+      const live = JSON.parse(raw);
+      Object.keys(live).forEach(k=>{ if(counts[k]!==undefined) counts[k]+=live[k]; });
+    }
+  } catch(e){}
+  return counts;
+}
+function recordVote(candidate){
+  try {
+    const raw = localStorage.getItem('voteResults');
+    const live = raw ? JSON.parse(raw) : {};
+    if(VOTE_SEED[candidate]!==undefined){
+      live[candidate] = (live[candidate]||0)+1;
+      localStorage.setItem('voteResults', JSON.stringify(live));
+    }
+  } catch(e){}
+}
+
 function renderThanks(){
   updateQHeader(null);
   updateProgress(3,3);
@@ -627,13 +674,45 @@ function renderThanks(){
     const f=document.getElementById('progressFill');
     if(f){ f.style.width='100%'; f.classList.add('pulse'); setTimeout(()=>f.classList.remove('pulse'),500); }
   },50);
+
+  if(state.q4) recordVote(state.q4);
+
+  const counts = getVoteCounts();
+  const total = Object.values(counts).reduce((a,b)=>a+b,0);
+  const sorted = Object.entries(counts).sort((a,b)=>b[1]-a[1]);
+
+  const bars = sorted.map(([name, count],i)=>{
+    const pct = Math.round(count/total*100);
+    const color = VOTE_COLORS[name]||'#888';
+    const shortName = name.split(' ').slice(0,2).join(' ');
+    return `<div class="chart-row" style="animation:fadeUp .4s ease ${.1+i*.08}s both">
+      <div class="chart-label">${shortName}</div>
+      <div class="chart-bar-wrap">
+        <div class="chart-bar-fill" style="width:0%;background:${color}" data-pct="${pct}"></div>
+      </div>
+      <div class="chart-pct" style="color:${color}">${pct}%</div>
+    </div>`;
+  }).join('');
+
   app.innerHTML=`
     <div class="screen ty-screen">
       <div class="ty-icon">✓</div>
       <h2 class="ty-title">¡Gracias por<br><span>participar!</span></h2>
       <p class="ty-desc">Tus respuestas quedaron registradas de forma <strong style="color:var(--white)">anónima y confidencial.</strong></p>
-      <button class="btn-home" onclick="goTo(0)" style="animation:fadeUp .5s ease .6s both">← Volver al inicio</button>
+      <div class="chart-card" style="animation:fadeUp .4s ease .2s both">
+        <p class="chart-title">¿Por quién votarían hoy?</p>
+        <p class="chart-sub">Intención de voto — Presidente Municipal de León</p>
+        ${bars}
+      </div>
+      <button class="btn-home" onclick="goTo(0)" style="animation:fadeUp .5s ease .9s both">← Volver al inicio</button>
     </div>`;
+
+  setTimeout(()=>{
+    document.querySelectorAll('.chart-bar-fill').forEach(el=>{
+      el.style.transition='width 1s cubic-bezier(.4,0,.2,1)';
+      el.style.width=el.dataset.pct+'%';
+    });
+  },80);
 }
 
 /* ── ACCIONES ── */
