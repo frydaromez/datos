@@ -720,10 +720,28 @@ async function getFingerprint(){
 }
 
 async function isIncognito(){
+  // Método 1: Chrome incógnito — cuota de almacenamiento reducida (~120MB)
   try{
-    const est=await navigator.storage.estimate();
-    return est.quota < 200*1024*1024;
-  }catch(e){ return false; }
+    const est = await navigator.storage.estimate();
+    if(est.quota < 200*1024*1024) return true;
+  }catch(e){}
+
+  // Método 2: Edge InPrivate y Firefox privado — no permite persistencia de storage
+  try{
+    const canPersist = await navigator.storage.persist();
+    if(!canPersist) return true;
+  }catch(e){}
+
+  // Método 3: Safari privado — indexedDB bloqueado
+  try{
+    await new Promise((resolve, reject)=>{
+      const req = indexedDB.open('__priv__');
+      req.onerror = ()=> resolve(true);
+      req.onsuccess = e=>{ e.target.result.close(); indexedDB.deleteDatabase('__priv__'); resolve(false); };
+    });
+  }catch(e){ return true; }
+
+  return false;
 }
 
 function showIncognitoBlock(){
@@ -956,9 +974,15 @@ function resetSurvey(){
   window._surveyFp = fp;
 
   try{
-    const r = await fetch(SHEETS_URL+'?fp='+encodeURIComponent(fp), {signal:AbortSignal.timeout(4000)});
-    const j = await r.json();
-    if(j.exists){ localStorage.setItem('survey_submitted','1'); showAlreadySubmitted(); return; }
+    const ctrl = new AbortController();
+    setTimeout(()=>ctrl.abort(), 5000);
+    const r = await fetch(SHEETS_URL+'?fp='+encodeURIComponent(fp), {
+      method:'GET', credentials:'omit', cache:'no-store', signal:ctrl.signal
+    });
+    if(r.ok){
+      const j = await r.json();
+      if(j.exists){ localStorage.setItem('survey_submitted','1'); showAlreadySubmitted(); return; }
+    }
   }catch(e){}
 
   renderWelcome();
